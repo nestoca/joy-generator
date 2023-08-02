@@ -20,11 +20,18 @@ type Generator struct {
 }
 
 type Result struct {
-	Release     *v1alpha1.Release `json:"release"`
-	Environment *Environment      `json:"environment"`
+	// Release holds the release's values loaded from the yaml file in the catalog
+	Release *v1alpha1.Release `json:"release"`
+
+	// Environment holds the environment info where the release will be deployed. The full spec is not loaded to minimize the payload size
+	Environment *Environment `json:"environment"`
+
+	// RenderedValues is a yaml string that is the Release.spec.values rendered with any templated fields
+	RenderedValues string `json:"templatedValues"`
 }
 
 type Environment struct {
+	Name        string `json:"name"`
 	ClusterName string `json:"clusterName"`
 	Namespace   string `json:"namespace"`
 }
@@ -98,13 +105,24 @@ func (r *Generator) Run(inputParams map[string]string) ([]*Result, error) {
 	for _, releaseGroup := range joyCatalog.Releases.Items {
 		for _, release := range releaseGroup.Releases {
 			if release != nil {
-				log.Debug().Str("release", release.Name).Str("environment", release.Environment.Name).Msg("Processing release")
+				log.Debug().Str("release", release.Name).Str("environment", release.Environment.Name).Msg("processing release")
+
+				renderedValues, err := RenderValues(release)
+				if err != nil {
+					log.Error().Err(err).Str("release", release.Name).Str("environment", release.Environment.Name).Msgf("error rendering values for release %s", release.Name)
+
+					// we don't want to fail rendering all the releases if rendering one fails, so we'll just skip this one
+					continue
+				}
+
 				reconciledReleases = append(reconciledReleases, &Result{
 					Release: release,
 					Environment: &Environment{
+						Name:        release.Environment.Name,
 						ClusterName: release.Environment.Spec.Cluster,
 						Namespace:   release.Environment.Spec.Namespace,
 					},
+					RenderedValues: renderedValues,
 				})
 			}
 		}
