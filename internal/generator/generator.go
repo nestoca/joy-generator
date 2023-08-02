@@ -36,6 +36,7 @@ type Environment struct {
 	Namespace   string `json:"namespace"`
 }
 
+// New creates a new Generator instance using GitHub App authentication
 func New(catalogRepoGitAddr string, catalogDir string, githubAppId int64, githubInstallationId int64, privateKeyPath string) (*Generator, error) {
 	t, err := ghinstallation.NewKeyFromFile(http.DefaultTransport, githubAppId, githubInstallationId, privateKeyPath)
 	if err != nil {
@@ -56,6 +57,8 @@ func New(catalogRepoGitAddr string, catalogDir string, githubAppId int64, github
 	return generator, nil
 }
 
+// getGitAuthenticationMethod returns an implementation githttp.AuthMethod that can be used to authenticate git calls
+// to the catalog repo
 func (r *Generator) getGitAuthenticationMethod() (*githttp.BasicAuth, error) {
 	// The call to .Token will automatically renew the token if it's expired
 	token, err := r.ghInstallTransport.Token(context.TODO())
@@ -69,6 +72,8 @@ func (r *Generator) getGitAuthenticationMethod() (*githttp.BasicAuth, error) {
 	}, nil
 }
 
+// init initializes the generator by changing the working directory to the catalog repo and cloning it
+// This should only be called once, before any calls to Run.
 func (r *Generator) init() error {
 	err := os.Chdir(r.catalogDir)
 	if err != nil {
@@ -89,7 +94,9 @@ func (r *Generator) init() error {
 	return err
 }
 
-func (r *Generator) Run(inputParams map[string]string) ([]*Result, error) {
+// Run runs the generator and returns a slice of results. Each result contains the release, the environment where it
+// will be deployed and the rendered values string.
+func (r *Generator) Run() ([]*Result, error) {
 	//Load Releases and relevant environment info (cluster name & namespace)
 	joyCatalog, err := catalog.Load(catalog.LoadOpts{
 		Dir:          r.catalogDir,
@@ -98,7 +105,7 @@ func (r *Generator) Run(inputParams map[string]string) ([]*Result, error) {
 		ResolveRefs:  true,
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("loading catalog: %w", err)
 	}
 
 	var reconciledReleases []*Result

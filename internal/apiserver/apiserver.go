@@ -63,7 +63,7 @@ func (s *ApiServer) GetParamsExecute(c *gin.Context) {
 		return
 	}
 
-	results, err := s.generator.Run(body.Input.Parameters)
+	results, err := s.generator.Run()
 	if err != nil {
 		log.Error().Err(err).Msg("failed to generate results")
 		c.JSON(http.StatusInternalServerError, gin.H{
