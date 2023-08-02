@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/bradleyfalzon/ghinstallation/v2"
 	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/plumbing/transport"
 	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/nestoca/joy/api/v1alpha1"
 	"github.com/nestoca/joy/pkg/catalog"
@@ -17,7 +16,7 @@ import (
 type Generator struct {
 	catalogRepoGitAddr string
 	catalogDir         string
-	gitAuthMethod      transport.AuthMethod
+	ghInstallTransport *ghinstallation.Transport
 }
 
 type Result struct {
@@ -36,19 +35,10 @@ func New(catalogRepoGitAddr string, catalogDir string, githubAppId int64, github
 		return nil, fmt.Errorf("creating github installation transport: %w", err)
 	}
 
-	// TODO: Automatic refresh of token
-	token, err := t.Token(context.TODO())
-	if err != nil {
-		return nil, fmt.Errorf("getting github installation token: %w", err)
-	}
-
 	generator := &Generator{
 		catalogRepoGitAddr: catalogRepoGitAddr,
 		catalogDir:         catalogDir,
-		gitAuthMethod: &githttp.BasicAuth{
-			Username: "x-access-token",
-			Password: token,
-		},
+		ghInstallTransport: t,
 	}
 
 	err = generator.init()
@@ -59,15 +49,33 @@ func New(catalogRepoGitAddr string, catalogDir string, githubAppId int64, github
 	return generator, nil
 }
 
+func (r *Generator) getGitAuthenticationMethod() (*githttp.BasicAuth, error) {
+	// The call to .Token will automatically renew the token if it's expired
+	token, err := r.ghInstallTransport.Token(context.TODO())
+	if err != nil {
+		return nil, fmt.Errorf("getting github installation token: %w", err)
+	}
+
+	return &githttp.BasicAuth{
+		Username: "x-access-token",
+		Password: token,
+	}, nil
+}
+
 func (r *Generator) init() error {
 	err := os.Chdir(r.catalogDir)
 	if err != nil {
 		return fmt.Errorf("changing directory to %s: %w", r.catalogDir, err)
 	}
 
+	auth, err := r.getGitAuthenticationMethod()
+	if err != nil {
+		return fmt.Errorf("getting git authentication credentials: %w", err)
+	}
+
 	_, err = git.PlainClone(r.catalogDir, false, &git.CloneOptions{
 		URL:           r.catalogRepoGitAddr,
-		Auth:          r.gitAuthMethod,
+		Auth:          auth,
 		ReferenceName: "merge-values-into-releases",
 	})
 
