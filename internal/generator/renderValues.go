@@ -21,11 +21,12 @@ func RenderValues(release *v1alpha1.Release) (string, error) {
 		return "", fmt.Errorf("parsing values template: %w", err)
 	}
 
+	tpl.Option("missingkey=error")
+
+	var result bytes.Buffer
 	type TemplateData struct {
 		Release *v1alpha1.Release
 	}
-
-	var result bytes.Buffer
 
 	err = tpl.Execute(&result, TemplateData{
 		Release: release,
