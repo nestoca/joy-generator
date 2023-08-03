@@ -1,10 +1,12 @@
 package apiserver
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/nestoca/joy-generator/internal/generator"
-	"github.com/rs/zerolog/log"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
+
+	"github.com/nestoca/joy-generator/internal/generator"
 )
 
 type GeneratorOutput struct {
@@ -45,6 +47,15 @@ func (s *ApiServer) Run() error {
 }
 
 func (s *ApiServer) Health(c *gin.Context) {
+	if err := s.generator.Status(); err != nil {
+		log.Error().Err(err).Msg("health check failed")
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": "error",
+			"detail": err.Error(),
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
 	})

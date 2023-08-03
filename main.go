@@ -8,6 +8,7 @@ import (
 	"github.com/nestoca/joy-generator/internal/apiserver"
 	"github.com/nestoca/joy-generator/internal/config"
 	"github.com/nestoca/joy-generator/internal/generator"
+	"github.com/nestoca/joy-generator/internal/gitrepo"
 )
 
 func main() {
@@ -17,9 +18,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	var gen *generator.Generator
+	var repo *gitrepo.GitRepo
 	if cfg.GithubApp != nil {
-		gen, err = generator.NewWithGitHubApp(
+		repo, err = gitrepo.NewWithGithubApp(
 			cfg.CatalogDir,
 			cfg.RepoUrl,
 			int64(cfg.GithubApp.AppId),
@@ -27,20 +28,28 @@ func main() {
 			cfg.GithubApp.PrivateKeyPath,
 		)
 	} else {
-		gen, err = generator.NewWithGithubToken(
+		repo, err = gitrepo.NewWithGithubToken(
 			cfg.CatalogDir,
 			cfg.RepoUrl,
 			cfg.GithubToken,
 		)
 	}
 	if err != nil {
-		log.Error().Err(err).Msg("Failed to create generator")
+		log.Error().Err(err).Msg("failed to initialize git repo")
 		os.Exit(1)
 	}
 
-	err = apiserver.New(gen).Run()
+	err = os.Chdir(cfg.CatalogDir)
 	if err != nil {
-		log.Error().Err(err).Msg("Failed to start server")
+		log.Error().Err(err).Msg("failed to change working directory to catalog")
+		os.Exit(1)
+	}
+
+	err = apiserver.New(
+		generator.New(repo),
+	).Run()
+	if err != nil {
+		log.Error().Err(err).Msg("failed to start server")
 		os.Exit(1)
 	}
 }
