@@ -1,63 +1,38 @@
 package main
 
 import (
-	"github.com/nestoca/joy-generator/internal/apiserver"
-	"github.com/nestoca/joy-generator/internal/generator"
-	"github.com/rs/zerolog/log"
 	"os"
-	"strconv"
+
+	"github.com/rs/zerolog/log"
+
+	"github.com/nestoca/joy-generator/internal/apiserver"
+	"github.com/nestoca/joy-generator/internal/config"
+	"github.com/nestoca/joy-generator/internal/generator"
 )
 
 func main() {
-	repoUrl, ok := os.LookupEnv("JOY_CATALOG_REPO_URL")
-	if !ok {
-		log.Error().Msg("JOY_CATALOG_REPO_URL not set")
-		os.Exit(1)
-	}
-
-	githubAppIdStr, ok := os.LookupEnv("GITHUB_APP_ID")
-	if !ok {
-		log.Error().Msg("GITHUB_APP_ID not set")
-		os.Exit(1)
-	}
-
-	githubAppId, err := strconv.Atoi(githubAppIdStr)
+	cfg, err := config.Load()
 	if err != nil {
-		log.Error().Msg("GITHUB_APP_ID not a number")
+		log.Error().Err(err).Msg("failed to load config")
 		os.Exit(1)
 	}
 
-	githubAppInstallationIdStr, ok := os.LookupEnv("GITHUB_APP_INSTALLATION_ID")
-	if !ok {
-		log.Error().Msg("GITHUB_APP_INSTALLATION_ID not set")
-		os.Exit(1)
-	}
-
-	githubAppInstallationId, err := strconv.Atoi(githubAppInstallationIdStr)
-	if err != nil {
-		log.Error().Msg("GITHUB_APP_INSTALLATION_ID not a number")
-		os.Exit(1)
-	}
-
-	privateKeyPath, ok := os.LookupEnv("GITHUB_APP_PRIVATE_KEY_PATH")
-	if !ok {
-		log.Error().Msg("GITHUB_APP_PRIVATE_KEY_PATH not set")
-		os.Exit(1)
-	}
-
-	catalogDir, ok := os.LookupEnv("JOY_CATALOG_DIR")
-	if !ok {
-		var err error
-		catalogDir, err = os.MkdirTemp("", "joy-catalog")
-		if err != nil {
-			panic(err)
-		}
-		log.Info().Msgf("JOY_CATALOG_DIR not set, using %s", catalogDir)
+	var gen *generator.Generator
+	if cfg.GithubApp != nil {
+		gen, err = generator.NewWithGitHubApp(
+			cfg.CatalogDir,
+			cfg.RepoUrl,
+			int64(cfg.GithubApp.AppId),
+			int64(cfg.GithubApp.InstallationId),
+			cfg.GithubApp.PrivateKeyPath,
+		)
 	} else {
-		log.Info().Msgf("JOY_CATALOG_DIR set to %s", catalogDir)
+		gen, err = generator.NewWithGithubToken(
+			cfg.CatalogDir,
+			cfg.RepoUrl,
+			cfg.GithubToken,
+		)
 	}
-
-	gen, err := generator.New(catalogDir, repoUrl, int64(githubAppId), int64(githubAppInstallationId), privateKeyPath)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to create generator")
 		os.Exit(1)

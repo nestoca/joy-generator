@@ -74,5 +74,3 @@ require (
 	gopkg.in/godo.v2 v2.0.9 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )
-
-//replace github.com/nestoca/joy v0.7.0 => ../joy
