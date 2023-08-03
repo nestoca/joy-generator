@@ -3,9 +3,11 @@ package generator
 import (
 	"bytes"
 	"fmt"
-	"github.com/nestoca/joy/api/v1alpha1"
-	"gopkg.in/yaml.v3"
 	"text/template"
+
+	"gopkg.in/yaml.v3"
+
+	"github.com/nestoca/joy/api/v1alpha1"
 )
 
 // RenderValues renders the values of the given release and produces a yaml string, processing any go template

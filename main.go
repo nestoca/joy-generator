@@ -39,12 +39,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = os.Chdir(cfg.CatalogDir)
-	if err != nil {
-		log.Error().Err(err).Msg("failed to change working directory to catalog")
-		os.Exit(1)
-	}
-
 	err = apiserver.New(
 		generator.New(repo),
 	).Run()

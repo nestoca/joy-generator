@@ -1,10 +1,12 @@
 package generator_test
 
 import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+
 	"github.com/nestoca/joy-generator/internal/generator"
 	"github.com/nestoca/joy/api/v1alpha1"
-	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestRenderValuesWithValidInput(t *testing.T) {
