@@ -6,6 +6,7 @@ require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.6.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-git/go-git/v5 v5.8.1
+	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/nestoca/joy v0.8.0
 	github.com/rs/zerolog v1.30.0
 	github.com/stretchr/testify v1.8.4

@@ -3,45 +3,41 @@ package config
 import (
 	"fmt"
 	"os"
-	"strconv"
 
+	"github.com/kelseyhightower/envconfig"
 	"github.com/rs/zerolog/log"
 )
 
 type Config struct {
-	RepoUrl     string
-	CatalogDir  string
-	GithubToken string
-	GithubApp   *GitHubAppConfig
+	RepoUrl     string `required:"true" split_words:"true"`
+	CatalogDir  string `split_words:"true"`
+	GithubToken string `split_words:"true"`
 }
 
 type GitHubAppConfig struct {
-	AppId          int
-	InstallationId int
-	PrivateKeyPath string
+	AppId          int    `required:"true" split_words:"true"`
+	InstallId      int    `required:"true" split_words:"true"`
+	PrivateKeyPath string `required:"true" split_words:"true"`
 }
 
 func Load() (*Config, error) {
 	newConfig := &Config{}
-	var ok bool
-	var err error
-
-	newConfig.RepoUrl, ok = os.LookupEnv("JOY_CATALOG_REPO_URL")
-	if !ok {
-		return nil, fmt.Errorf("JOY_CATALOG_REPO_URL not set")
+	err := envconfig.Process("joy", newConfig)
+	if err != nil {
+		return nil, fmt.Errorf("reading config: %w", err)
 	}
 
-	newConfig.GithubToken, ok = os.LookupEnv("GITHUB_TOKEN")
-	if !ok {
-		newConfig.GithubApp, err = loadGithubAppConfig()
+	ghaConfig := &GitHubAppConfig{}
+	// If the GithubToken is not set, the GitHub App configuration is required
+	if newConfig.GithubToken == "" {
+		err := envconfig.Process("joy_github_app", ghaConfig)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("reading github app config: %w", err)
 		}
 	}
 
-	newConfig.CatalogDir, ok = os.LookupEnv("JOY_CATALOG_DIR")
-	if !ok {
-		var err error
+	// If the catalog directory is not set, create a temporary directory
+	if newConfig.CatalogDir == "" {
 		newConfig.CatalogDir, err = os.MkdirTemp("", "joy-catalog")
 		if err != nil {
 			panic(err)
@@ -49,38 +45,6 @@ func Load() (*Config, error) {
 		log.Debug().Msgf("JOY_CATALOG_DIR not set, using %s", newConfig.CatalogDir)
 	} else {
 		log.Debug().Msgf("JOY_CATALOG_DIR set to %s", newConfig.CatalogDir)
-	}
-
-	return newConfig, nil
-}
-
-func loadGithubAppConfig() (*GitHubAppConfig, error) {
-	var err error
-	newConfig := &GitHubAppConfig{}
-
-	githubAppIdStr, ok := os.LookupEnv("GITHUB_APP_ID")
-	if !ok {
-		return nil, fmt.Errorf("GITHUB_APP_ID not set")
-	}
-
-	newConfig.AppId, err = strconv.Atoi(githubAppIdStr)
-	if err != nil {
-		return nil, fmt.Errorf("GITHUB_APP_ID not a number")
-	}
-
-	githubAppInstallationIdStr, ok := os.LookupEnv("GITHUB_APP_INSTALLATION_ID")
-	if !ok {
-		return nil, fmt.Errorf("GITHUB_APP_INSTALLATION_ID not set")
-	}
-
-	newConfig.InstallationId, err = strconv.Atoi(githubAppInstallationIdStr)
-	if err != nil {
-		return nil, fmt.Errorf("GITHUB_APP_INSTALLATION_ID not a number")
-	}
-
-	newConfig.PrivateKeyPath, ok = os.LookupEnv("GITHUB_APP_PRIVATE_KEY_PATH")
-	if !ok {
-		return nil, fmt.Errorf("GITHUB_APP_PRIVATE_KEY_PATH not set")
 	}
 
 	return newConfig, nil

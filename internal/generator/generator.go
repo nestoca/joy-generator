@@ -19,16 +19,10 @@ type Result struct {
 	Release *v1alpha1.Release `json:"release"`
 
 	// Environment holds the environment info where the release will be deployed. The full spec is not loaded to minimize the payload size
-	Environment *Environment `json:"environment"`
+	Environment *v1alpha1.Environment `json:"environment"`
 
-	// RenderedValues is a yaml string that is the Release.spec.values rendered with any templated fields
-	RenderedValues string `json:"templatedValues"`
-}
-
-type Environment struct {
-	Name        string `json:"name"`
-	ClusterName string `json:"clusterName"`
-	Namespace   string `json:"namespace"`
+	// Values is a yaml string that is the Release.spec.values rendered with any templated fields
+	Values string `json:"values"`
 }
 
 func New(repo *gitrepo.GitRepo) *Generator {
@@ -58,8 +52,8 @@ func (r *Generator) Run() ([]*Result, error) {
 	}
 
 	var reconciledReleases []*Result
-	for _, releaseGroup := range joyCatalog.Releases.Items {
-		for _, release := range releaseGroup.Releases {
+	for _, crossRelease := range joyCatalog.Releases.Items {
+		for _, release := range crossRelease.Releases {
 			if release != nil {
 				log.Debug().Str("release", release.Name).Str("environment", release.Environment.Name).Msg("processing release")
 
@@ -72,13 +66,9 @@ func (r *Generator) Run() ([]*Result, error) {
 				}
 
 				reconciledReleases = append(reconciledReleases, &Result{
-					Release: release,
-					Environment: &Environment{
-						Name:        release.Environment.Name,
-						ClusterName: release.Environment.Spec.Cluster,
-						Namespace:   release.Environment.Spec.Namespace,
-					},
-					RenderedValues: renderedValues,
+					Release:     release,
+					Environment: release.Environment,
+					Values:      renderedValues,
 				})
 			}
 		}

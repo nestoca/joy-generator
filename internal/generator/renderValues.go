@@ -27,11 +27,13 @@ func RenderValues(release *v1alpha1.Release) (string, error) {
 
 	var result bytes.Buffer
 	type TemplateData struct {
-		Release *v1alpha1.Release
+		Release     *v1alpha1.Release
+		Environment *v1alpha1.Environment
 	}
 
 	err = tpl.Execute(&result, TemplateData{
-		Release: release,
+		Release:     release,
+		Environment: release.Environment,
 	})
 	if err != nil {
 		return "", fmt.Errorf("executing values template: %w", err)
