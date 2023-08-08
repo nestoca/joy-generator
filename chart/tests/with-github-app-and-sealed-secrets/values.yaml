@@ -2,25 +2,22 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+secretType: 'sealedSecret'
+
 # Configuration settings for the joy-generator instance
 applicationConfig:
   # The HTTPS Git URL of your joy catalog
-  repoUrl: ""
-  # The GitHub token to use to access the repo
-  githubToken: ""
+  repoUrl: "https://github.com/example/foobar.git"
   # The GitHub app configuration.
   # Required if githubToken is not set.
   githubApp:
     # The GitHub application ID
-    appId: ""
+    appId: 123456
     # The GitHub application installation ID
-    installationId: ""
+    installationId: 789101112
     # The GitHub application private key (PEM format)
-    privateKey: ""
-
-# The secret type to use for applicationConfig values.
-# Can be either 'secret' or 'sealedSecret'.
-secretType: 'secret'
+    privateKey: |
+      FOOBARLOREMISPUM
 
 replicaCount: 1
 
@@ -28,7 +25,7 @@ image:
   repository: ghcr.io/nestoca/joy-generator
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: 0.1.2
 
 imagePullSecrets: []
 nameOverride: ""
