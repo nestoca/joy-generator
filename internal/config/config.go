@@ -12,11 +12,12 @@ type Config struct {
 	RepoUrl     string `required:"true" split_words:"true"`
 	CatalogDir  string `split_words:"true"`
 	GithubToken string `split_words:"true"`
+	GithubApp   *GitHubAppConfig
 }
 
 type GitHubAppConfig struct {
-	AppId          int    `required:"true" split_words:"true"`
-	InstallId      int    `required:"true" split_words:"true"`
+	Id             int64  `required:"true" split_words:"true"`
+	InstallationId int64  `required:"true" split_words:"true"`
 	PrivateKeyPath string `required:"true" split_words:"true"`
 }
 

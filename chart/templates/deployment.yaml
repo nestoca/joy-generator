@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "joy-generator.fullname" . }}
+  labels:
+    {{- include "joy-generator.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "joy-generator.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "joy-generator.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: catalog-dir
+          emptyDir: {}
+        {{- if .Values.applicationConfig.githubApp }}
+        - name: github-app-private-key
+          secret:
+            secretName: {{ include "joy-generator.fullname" . }}-github-app-key
+        {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: /tmp/catalog
+              name: catalog-dir
+            {{- if .Values.applicationConfig.githubApp }}
+            - mountPath: /etc/joy/config
+              name: github-app-private-key
+            {{- end }}
+          env:
+            - name: JOY_CATALOG_DIR
+              value: /tmp/catalog
+            {{- if .Values.applicationConfig.githubApp }}
+            - name: JOY_GITHUB_APP_PRIVATE_KEY_PATH
+              value: /etc/joy/config/githubApp.pem
+            {{- end }}
+          envFrom:
+            - secretRef:
+                name: {{ include "joy-generator.fullname" . }}-config
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
