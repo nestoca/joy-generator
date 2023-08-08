@@ -10,9 +10,18 @@ on:
     branches: ["master"]
 
 jobs:
-  test:
+  test-chart:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+      - name: Test chart
+        uses: silphid/actions/test-chart@v1
+        with:
+          work-dir: chart
+  test-app:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
       - name: Setup Go environment
         uses: actions/setup-go@v3.3.1
         with:
@@ -23,10 +32,25 @@ jobs:
         run: go mod download
       - name: Run tests
         run: go test ./...
-
   build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - uses: actions/checkout@v3
+      - name: Build Docker image
+        uses: docker/build-push-action@v3.2.0
+        with:
+          context: .
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+  publish:
+    if: github.ref == 'refs/heads/master'
     needs:
-      - test
+      - test-app
+      - test-chart
+      - build
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -84,7 +108,7 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
-            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') }}
+            type=raw,value=latest
             type=semver,pattern={{version}},value=${{ steps.changelog.outputs.tag }}
 
       - name: Build and push Docker image
