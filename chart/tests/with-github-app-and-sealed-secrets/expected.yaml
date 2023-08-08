@@ -5,7 +5,7 @@ kind: ConfigMap
 metadata:
   name: my-release-joy-generator-config
 data:
-  token: "my-release-joy-generator-config$JOY_PLUGIN_TOKEN"
+  token: "$my-release-joy-generator-config:JOY_PLUGIN_TOKEN"
   baseUrl: "http://my-release-joy-generator"
 ---
 # Source: joy-generator/templates/service.yaml
