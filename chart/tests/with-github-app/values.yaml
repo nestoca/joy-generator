@@ -4,6 +4,7 @@
 
 # Configuration settings for the joy-generator instance
 applicationConfig:
+  pluginToken: "@very!l0ngands3curet0ken"
   # The HTTPS Git URL of your joy catalog
   repoUrl: "https://github.com/example/foobar.git"
   # The GitHub app configuration.

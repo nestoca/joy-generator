@@ -27,11 +27,13 @@ type GetParamsRequest struct {
 }
 
 type ApiServer struct {
+	token     string
 	generator *generator.Generator
 }
 
-func New(g *generator.Generator) *ApiServer {
+func New(token string, g *generator.Generator) *ApiServer {
 	return &ApiServer{
+		token:     token,
 		generator: g,
 	}
 }
@@ -62,6 +64,16 @@ func (s *ApiServer) Health(c *gin.Context) {
 }
 
 func (s *ApiServer) GetParamsExecute(c *gin.Context) {
+	if c.GetHeader("Authorization") != "Bearer "+s.token {
+		log.Debug().Msg("invalid token received")
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code":   http.StatusUnauthorized,
+			"error":  "invalid token",
+			"detail": "invalid token received",
+		})
+		return
+	}
+
 	body := &GetParamsRequest{}
 	err := c.BindJSON(body)
 	if err != nil {

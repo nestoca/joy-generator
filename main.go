@@ -40,6 +40,7 @@ func main() {
 	}
 
 	err = apiserver.New(
+		cfg.PluginToken,
 		generator.New(repo),
 	).Run()
 	if err != nil {

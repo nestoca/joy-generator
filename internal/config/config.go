@@ -9,6 +9,7 @@ import (
 )
 
 type Config struct {
+	PluginToken string `required:"true" split_words:"true"`
 	RepoUrl     string `required:"true" split_words:"true"`
 	CatalogDir  string `split_words:"true"`
 	GithubToken string `split_words:"true"`

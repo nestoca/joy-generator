@@ -1,4 +1,13 @@
 ---
+# Source: joy-generator/templates/argocd-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-release-joy-generator-config
+data:
+  token: "my-release-joy-generator-config$JOY_PLUGIN_TOKEN"
+  baseUrl: "http://my-release-joy-generator"
+---
 # Source: joy-generator/templates/service.yaml
 apiVersion: v1
 kind: Service
@@ -93,6 +102,7 @@ metadata:
   name: my-release-joy-generator-config
 spec:
   encryptedData:
+    JOY_PLUGIN_TOKEN: "@very!l0ngands3curet0ken"
     JOY_REPO_URL: "https://github.com/example/foobar.git"
     JOY_GITHUB_APP_ID: "123456"
     JOY_GITHUB_APP_INSTALLATION_ID: "789101112"
