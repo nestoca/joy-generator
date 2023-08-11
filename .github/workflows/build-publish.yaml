@@ -55,6 +55,8 @@ jobs:
     permissions:
       packages: write
       contents: write
+      id-token: write
+      pages: write
     env:
       HELM_VERSION: v3.12.2
       YQ_VERSION: v4.34.2
@@ -67,8 +69,10 @@ jobs:
         run: |
           curl -L https://github.com/mikefarah/yq/releases/download/${{ env.YQ_VERSION }}/yq_linux_amd64.tar.gz | tar xvz
           sudo mv yq_linux_amd64 /usr/local/bin/yq
+
       - uses: actions/checkout@v3
         with:
+          token: ${{ secrets.GH_TOKEN }}
           fetch-depth: 0
 
       - name: Set up Docker Buildx
@@ -83,7 +87,7 @@ jobs:
 
       - name: Generate changelog and tag release
         id: changelog
-        uses: TriPSs/conventional-changelog-action@v3
+        uses: TriPSs/conventional-changelog-action@v4
         with:
           input-file: CHANGELOG.md
           output-file: CHANGELOG.md
@@ -109,7 +113,7 @@ jobs:
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
-        uses: docker/metadata-action@v4.1.1
+        uses: docker/metadata-action@v4
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
@@ -118,7 +122,7 @@ jobs:
 
       - name: Build and push Docker image
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
-        uses: docker/build-push-action@v3.2.0
+        uses: docker/build-push-action@v3
         with:
           context: .
           push: true
@@ -147,7 +151,7 @@ jobs:
           helm package ${{ github.workspace }}/chart
           helm repo index --url https://github.com/${{ github.repository }}/releases/download/${{ steps.changelog.outputs.tag }} --merge index.yaml .
           
-          echo "artifact-path='${{ runner.temp }}/helm-release/${CHART_NAME}-${{ steps.changelog.outputs.tag }}.tgz'" >> $GITHUB_OUTPUT
+          echo "artifact-path=${{ runner.temp }}/helm-release/${CHART_NAME}-${{ steps.changelog.outputs.version }}.tgz" >> $GITHUB_OUTPUT
 
       - name: Upload pages artifact
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
