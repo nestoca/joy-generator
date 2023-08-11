@@ -55,6 +55,9 @@ jobs:
     permissions:
       packages: write
       contents: write
+    env:
+      HELM_VERSION: v3.12.2
+      YQ_VERSION: v4.34.2
     steps:
       - name: Install helm binary
         run: |
