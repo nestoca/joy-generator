@@ -23,8 +23,8 @@ func main() {
 		repo, err = gitrepo.NewWithGithubApp(
 			cfg.CatalogDir,
 			cfg.RepoUrl,
-			int64(cfg.GithubApp.AppId),
-			int64(cfg.GithubApp.InstallationId),
+			cfg.GithubApp.Id,
+			cfg.GithubApp.InstallationId,
 			cfg.GithubApp.PrivateKeyPath,
 		)
 	} else {
@@ -40,6 +40,7 @@ func main() {
 	}
 
 	err = apiserver.New(
+		cfg.PluginToken,
 		generator.New(repo),
 	).Run()
 	if err != nil {
