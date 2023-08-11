@@ -1,0 +1,10 @@
+# 0.0.0 (2023-08-11)
+
+
+### Features
+
+* **DEVOPS-1803:** Create applicationset generator plugin ([#1](https://github.com/nestoca/joy-generator/issues/1)) ([a63ee63](https://github.com/nestoca/joy-generator/commit/a63ee633b54d3a4399f4b7e23a790f7734250548))
+* **DEVOPS-1803:** Publish joy-generator image and chart ([#3](https://github.com/nestoca/joy-generator/issues/3)) ([491b019](https://github.com/nestoca/joy-generator/commit/491b019dc4fb1dea8dd88204698df86d1d64a5ac))
+
+
+
