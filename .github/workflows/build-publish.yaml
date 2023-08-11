@@ -56,6 +56,14 @@ jobs:
       packages: write
       contents: write
     steps:
+      - name: Install helm binary
+        run: |
+          curl -L https://get.helm.sh/helm-${{ env.HELM_VERSION }}-linux-amd64.tar.gz | tar xvz
+          sudo mv linux-amd64/helm /usr/local/bin/helm
+      - name: Install yq binary
+        run: |
+          curl -L https://github.com/mikefarah/yq/releases/download/${{ env.YQ_VERSION }}/yq_linux_amd64.tar.gz | tar xvz
+          sudo mv yq_linux_amd64 /usr/local/bin/yq
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
@@ -81,11 +89,11 @@ jobs:
           skip-version-file: true
           git-push: false
 
-      - name: Update appVersion in chart
+      - name: Update versions in chart
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
-        uses: mikefarah/yq@v4
-        with:
-          cmd: yq -i '.appVersion = "${{ steps.changelog.outputs.version }}"' 'chart/Chart.yaml'
+        run: |
+          yq -i '.appVersion = "${{ steps.changelog.outputs.version }}"' 'chart/Chart.yaml'
+          yq -i '.version = "${{ steps.changelog.outputs.version }}"' 'chart/Chart.yaml'         
 
       - name: Commit release
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
@@ -116,7 +124,33 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      # TODO: Build and publish chart
+      - name: Package chart release
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        id: chart-release
+        run: |
+          ORG_NAME=${GITHUB_REPOSITORY%%/*}
+          REPO_NAME=${GITHUB_REPOSITORY#*/}
+          
+          CHART_NAME=$(yq .name ${{ github.workspace }}/chart/Chart.yaml)
+          
+          mkdir -p ${{ runner.temp }}/helm-release
+          
+          cd ${{ runner.temp }}/helm-release
+          
+          # Try to get the current index.yaml of the helm repo from https://${ORG_NAME}.github.io/${REPO_NAME}/index.yaml
+          # If it fails, create a new index.yaml
+          curl -f -L https://${ORG_NAME}.github.io/${REPO_NAME}/index.yaml -o index.yaml || echo -e "apiVersion: v1\nentries: {}" > index.yaml
+          
+          helm package ${{ github.workspace }}/chart
+          helm repo index --url https://github.com/${{ github.repository }}/releases/download/${{ steps.changelog.outputs.tag }} --merge index.yaml .
+          
+          echo "artifact-path='${{ runner.temp }}/helm-release/${CHART_NAME}-${{ steps.changelog.outputs.tag }}.tgz'" >> $GITHUB_OUTPUT
+
+      - name: Upload pages artifact
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: ${{ runner.temp }}/helm-release
 
       - name: Push changes
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
@@ -129,7 +163,13 @@ jobs:
         with:
           allowUpdates: true
           draft: false
+          artifactErrorsFailBuild: true
           name: ${{ steps.changelog.outputs.tag }}
           tag: ${{ steps.changelog.outputs.tag }}
           body: ${{ steps.changelog.outputs.clean_changelog }}
           token: ${{ github.token }}
+          artifacts: ${{ steps.chart-release.outputs.artifact-path }}
+
+      - name: Deploy to GitHub Pages
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        uses: actions/deploy-pages@v2
