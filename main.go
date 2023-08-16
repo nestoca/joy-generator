@@ -12,20 +12,20 @@ import (
 )
 
 func main() {
-	cfg, err := config.Load()
+	cfg, ghAppCfg, err := config.Load()
 	if err != nil {
 		log.Error().Err(err).Msg("failed to load config")
 		os.Exit(1)
 	}
 
 	var repo *gitrepo.GitRepo
-	if cfg.GithubApp != nil {
+	if ghAppCfg != nil {
 		repo, err = gitrepo.NewWithGithubApp(
 			cfg.CatalogDir,
 			cfg.RepoUrl,
-			cfg.GithubApp.Id,
-			cfg.GithubApp.InstallationId,
-			cfg.GithubApp.PrivateKeyPath,
+			ghAppCfg.Id,
+			ghAppCfg.InstallationId,
+			ghAppCfg.PrivateKeyPath,
 		)
 	} else {
 		repo, err = gitrepo.NewWithGithubToken(

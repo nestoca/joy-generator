@@ -13,7 +13,6 @@ type Config struct {
 	RepoUrl     string `required:"true" split_words:"true"`
 	CatalogDir  string `split_words:"true"`
 	GithubToken string `split_words:"true"`
-	GithubApp   *GitHubAppConfig
 }
 
 type GitHubAppConfig struct {
@@ -22,11 +21,11 @@ type GitHubAppConfig struct {
 	PrivateKeyPath string `required:"true" split_words:"true"`
 }
 
-func Load() (*Config, error) {
+func Load() (*Config, *GitHubAppConfig, error) {
 	newConfig := &Config{}
 	err := envconfig.Process("joy", newConfig)
 	if err != nil {
-		return nil, fmt.Errorf("reading config: %w", err)
+		return nil, nil, fmt.Errorf("reading config: %w", err)
 	}
 
 	ghaConfig := &GitHubAppConfig{}
@@ -34,8 +33,10 @@ func Load() (*Config, error) {
 	if newConfig.GithubToken == "" {
 		err := envconfig.Process("joy_github_app", ghaConfig)
 		if err != nil {
-			return nil, fmt.Errorf("reading github app config: %w", err)
+			return nil, nil, fmt.Errorf("reading github app config: %w", err)
 		}
+	} else {
+		ghaConfig = nil
 	}
 
 	// If the catalog directory is not set, create a temporary directory
@@ -49,5 +50,5 @@ func Load() (*Config, error) {
 		log.Debug().Msgf("JOY_CATALOG_DIR set to %s", newConfig.CatalogDir)
 	}
 
-	return newConfig, nil
+	return newConfig, ghaConfig, nil
 }
