@@ -1,3 +1,12 @@
+## [0.0.2](https://github.com/nestoca/joy-generator/compare/v0.0.1...v0.0.2) (2023-08-16)
+
+
+### Bug Fixes
+
+* **DEVOPS-1803:** Fix conditional github app config ([1ed5068](https://github.com/nestoca/joy-generator/commit/1ed5068134699b92818dc47f2b1bcd5cc6485920))
+
+
+
 ## [0.0.1](https://github.com/nestoca/joy-generator/compare/v0.0.0...v0.0.1) (2023-08-16)
 
 
