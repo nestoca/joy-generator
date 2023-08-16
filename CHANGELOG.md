@@ -1,3 +1,12 @@
+## [0.0.1](https://github.com/nestoca/joy-generator/compare/v0.0.0...v0.0.1) (2023-08-16)
+
+
+### Bug Fixes
+
+* **DEVOPS-1803:** Fix rendering chart with github token ([6726189](https://github.com/nestoca/joy-generator/commit/67261897618d66227bda41fcc355a5b59f14e4ef))
+
+
+
 # 0.0.0 (2023-08-11)
 
 
