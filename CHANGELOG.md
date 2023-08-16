@@ -1,3 +1,12 @@
+## [0.0.3](https://github.com/nestoca/joy-generator/compare/v0.0.2...v0.0.3) (2023-08-16)
+
+
+### Bug Fixes
+
+* **DEVOPS-1803:** Various bug fixes ([0cccc01](https://github.com/nestoca/joy-generator/commit/0cccc01ec18556a21591d64d60eb7d1a5d6629ed))
+
+
+
 ## [0.0.2](https://github.com/nestoca/joy-generator/compare/v0.0.1...v0.0.2) (2023-08-16)
 
 
