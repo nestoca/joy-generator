@@ -43,7 +43,7 @@ func (s *ApiServer) Run() error {
 
 	r.GET("/api/v1/health", s.Health)
 	//goland:noinspection SpellCheckingInspection
-	r.GET("/api/v1/getparams.execute", s.GetParamsExecute)
+	r.POST("/api/v1/getparams.execute", s.GetParamsExecute)
 
 	return r.Run()
 }

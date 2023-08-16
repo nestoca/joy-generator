@@ -30,6 +30,9 @@ type GitRepo struct {
 	// not used
 	githubToken string
 
+	// githubUser is the GitHub user used to authenticate API calls to the catalog repositoryAddress. Defaults to "x-access-token"
+	githubUser string
+
 	repository *git.Repository
 }
 
@@ -54,11 +57,12 @@ func NewWithGithubApp(url string, dir string, githubAppId int64, githubInstallat
 }
 
 // NewWithGithubToken creates a new GitRepo instance using GitHub Token authentication
-func NewWithGithubToken(url string, dir string, githubToken string) (*GitRepo, error) {
+func NewWithGithubToken(url string, dir string, githubToken string, githubUser string) (*GitRepo, error) {
 	r := &GitRepo{
 		dir:         dir,
 		url:         url,
 		githubToken: githubToken,
+		githubUser:  githubUser,
 	}
 
 	if err := r.init(); err != nil {
@@ -71,7 +75,7 @@ func NewWithGithubToken(url string, dir string, githubToken string) (*GitRepo, e
 func (r *GitRepo) init() error {
 	auth, err := r.getCredentials()
 	if err != nil {
-		return fmt.Errorf("getting git authentication credentials: %w", err)
+		return fmt.Errorf("getting git credentials: %w", err)
 	}
 
 	repository, err := git.PlainClone(r.dir, false, &git.CloneOptions{
@@ -81,7 +85,7 @@ func (r *GitRepo) init() error {
 		Depth:         1, // Only fetch the latest commit
 	})
 	if err != nil {
-		return fmt.Errorf("cloning git repositoryAddress: %w", err)
+		return fmt.Errorf("cloning git repository: %w", err)
 	}
 
 	r.repository = repository
@@ -114,14 +118,13 @@ func (r *GitRepo) getCredentials() (*githttp.BasicAuth, error) {
 		return nil, fmt.Errorf("no github authentication method provided. Either githubToken or ghAppInstallation must be set")
 	}
 
-	// The call to .Token will automatically renew the token if it's expired
-	token, err = r.ghAppInstallation.Token(context.TODO())
-	if err != nil {
-		return nil, fmt.Errorf("getting github installation token: %w", err)
+	user := "x-access-token"
+	if r.githubUser != "" {
+		user = r.githubUser
 	}
 
 	return &githttp.BasicAuth{
-		Username: "x-access-token",
+		Username: user,
 		Password: token,
 	}, nil
 }

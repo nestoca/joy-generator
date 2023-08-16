@@ -21,17 +21,18 @@ func main() {
 	var repo *gitrepo.GitRepo
 	if ghAppCfg != nil {
 		repo, err = gitrepo.NewWithGithubApp(
-			cfg.CatalogDir,
 			cfg.RepoUrl,
+			cfg.CatalogDir,
 			ghAppCfg.Id,
 			ghAppCfg.InstallationId,
 			ghAppCfg.PrivateKeyPath,
 		)
 	} else {
 		repo, err = gitrepo.NewWithGithubToken(
-			cfg.CatalogDir,
 			cfg.RepoUrl,
+			cfg.CatalogDir,
 			cfg.GithubToken,
+			cfg.GithubUser,
 		)
 	}
 	if err != nil {

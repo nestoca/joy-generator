@@ -34,10 +34,10 @@ kind: Service
 metadata:
   name: my-release-joy-generator
   labels:
-    helm.sh/chart: joy-generator-0.0.1
+    helm.sh/chart: joy-generator-0.0.2
     app.kubernetes.io/name: joy-generator
     app.kubernetes.io/instance: my-release
-    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/version: "0.0.2"
     app.kubernetes.io/managed-by: Helm
 spec:
   type: ClusterIP
@@ -56,10 +56,10 @@ kind: Deployment
 metadata:
   name: my-release-joy-generator
   labels:
-    helm.sh/chart: joy-generator-0.0.1
+    helm.sh/chart: joy-generator-0.0.2
     app.kubernetes.io/name: joy-generator
     app.kubernetes.io/instance: my-release
-    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/version: "0.0.2"
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1

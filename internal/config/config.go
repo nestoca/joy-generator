@@ -13,6 +13,7 @@ type Config struct {
 	RepoUrl     string `required:"true" split_words:"true"`
 	CatalogDir  string `split_words:"true"`
 	GithubToken string `split_words:"true"`
+	GithubUser  string `split_words:"true"`
 }
 
 type GitHubAppConfig struct {
@@ -30,7 +31,7 @@ func Load() (*Config, *GitHubAppConfig, error) {
 
 	ghaConfig := &GitHubAppConfig{}
 	// If the GithubToken is not set, the GitHub App configuration is required
-	if newConfig.GithubToken == "" {
+	if newConfig.GithubToken == "" && newConfig.GithubUser == "" {
 		err := envconfig.Process("joy_github_app", ghaConfig)
 		if err != nil {
 			return nil, nil, fmt.Errorf("reading github app config: %w", err)
