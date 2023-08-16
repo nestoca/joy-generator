@@ -5,14 +5,20 @@
 # Configuration settings for the joy-generator instance
 applicationConfig:
   # The shared token that ArgoCD will use to call the joy-generator plugin API
-  # This should be some long random string
+  # This should be some long and secure random string
   pluginToken: ""
   # The HTTPS Git URL of your joy catalog
   repoUrl: ""
-  # The GitHub token to use to access the repo
-  githubToken: ""
-  # The GitHub app configuration.
-  # Required if githubToken is not set.
+
+  # joy-generator supports authenticating with GitHub using either a personal access token or a GitHub App
+  # Provide either the githubUser or githubApp section, but not both
+
+#  githubUser:
+#    # The GitHub username to use for the joy-generator instance
+#    username: ""
+#    # The GitHub personal access token to use for the joy-generator instance
+#    token: ""
+
 #  githubApp:
 #    # The GitHub application ID
 #    appId: ""

@@ -4,9 +4,10 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: my-release-joy-generator-config
-stringData:
+stringData:  
   JOY_PLUGIN_TOKEN: "@very!l0ngands3curet0ken"
   JOY_REPO_URL: "https://github.com/example/foobar.git"
+  JOY_GITHUB_USER: "username"
   JOY_GITHUB_TOKEN: "12312312312312"
 ---
 # Source: joy-generator/templates/argocd-config.yaml
@@ -24,10 +25,10 @@ kind: Service
 metadata:
   name: my-release-joy-generator
   labels:
-    helm.sh/chart: joy-generator-0.0.2
+    helm.sh/chart: joy-generator-0.0.3
     app.kubernetes.io/name: joy-generator
     app.kubernetes.io/instance: my-release
-    app.kubernetes.io/version: "0.0.2"
+    app.kubernetes.io/version: "0.0.3"
     app.kubernetes.io/managed-by: Helm
 spec:
   type: ClusterIP
@@ -46,10 +47,10 @@ kind: Deployment
 metadata:
   name: my-release-joy-generator
   labels:
-    helm.sh/chart: joy-generator-0.0.2
+    helm.sh/chart: joy-generator-0.0.3
     app.kubernetes.io/name: joy-generator
     app.kubernetes.io/instance: my-release
-    app.kubernetes.io/version: "0.0.2"
+    app.kubernetes.io/version: "0.0.3"
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1

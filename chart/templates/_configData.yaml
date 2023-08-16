@@ -1,0 +1,16 @@
+{{/*
+Config ENV Vars for the application
+*/}}
+{{- define "joy-generator.config" }}
+JOY_PLUGIN_TOKEN: "{{ required "pluginToken is required" .Values.applicationConfig.pluginToken }}"
+JOY_REPO_URL: "{{ required "repoUrl is required" .Values.applicationConfig.repoUrl }}"
+{{- if .Values.applicationConfig.githubApp }}
+JOY_GITHUB_APP_ID: "{{ .Values.applicationConfig.githubApp.appId }}"
+JOY_GITHUB_APP_INSTALLATION_ID: "{{ .Values.applicationConfig.githubApp.installationId }}"
+{{- else if .Values.applicationConfig.githubUser }}
+JOY_GITHUB_USER: "{{ .Values.applicationConfig.githubUser.username }}"
+JOY_GITHUB_TOKEN: "{{ .Values.applicationConfig.githubUser.token }}"
+{{- else }}
+{{- fail "one of githubUser or githubAuth is required" }}
+{{- end }}
+{{- end }}

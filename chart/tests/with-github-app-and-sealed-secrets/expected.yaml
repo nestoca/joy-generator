@@ -14,10 +14,10 @@ kind: Service
 metadata:
   name: my-release-joy-generator
   labels:
-    helm.sh/chart: joy-generator-0.0.2
+    helm.sh/chart: joy-generator-0.0.3
     app.kubernetes.io/name: joy-generator
     app.kubernetes.io/instance: my-release
-    app.kubernetes.io/version: "0.0.2"
+    app.kubernetes.io/version: "0.0.3"
     app.kubernetes.io/managed-by: Helm
 spec:
   type: ClusterIP
@@ -36,10 +36,10 @@ kind: Deployment
 metadata:
   name: my-release-joy-generator
   labels:
-    helm.sh/chart: joy-generator-0.0.2
+    helm.sh/chart: joy-generator-0.0.3
     app.kubernetes.io/name: joy-generator
     app.kubernetes.io/instance: my-release
-    app.kubernetes.io/version: "0.0.2"
+    app.kubernetes.io/version: "0.0.3"
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
@@ -101,7 +101,7 @@ kind: SealedSecret
 metadata:
   name: my-release-joy-generator-config
 spec:
-  encryptedData:
+  encryptedData:    
     JOY_PLUGIN_TOKEN: "@very!l0ngands3curet0ken"
     JOY_REPO_URL: "https://github.com/example/foobar.git"
     JOY_GITHUB_APP_ID: "123456"
