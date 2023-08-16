@@ -1,3 +1,12 @@
+## [0.0.4](https://github.com/nestoca/joy-generator/compare/v0.0.3...v0.0.4) (2023-08-16)
+
+
+### Bug Fixes
+
+* **DEVOPS-1803:** Improve config variable loading in chart ([9673288](https://github.com/nestoca/joy-generator/commit/9673288224a048242cbd932fde6561f5d61400cf))
+
+
+
 ## [0.0.3](https://github.com/nestoca/joy-generator/compare/v0.0.2...v0.0.3) (2023-08-16)
 
 
