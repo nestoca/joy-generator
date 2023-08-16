@@ -4,26 +4,10 @@
 
 # Configuration settings for the joy-generator instance
 applicationConfig:
-  # The shared token that ArgoCD will use to call the joy-generator plugin API
-  # This should be some long random string
-  pluginToken: ""
+  pluginToken: "@very!l0ngands3curet0ken"
   # The HTTPS Git URL of your joy catalog
-  repoUrl: ""
-  # The GitHub token to use to access the repo
-  githubToken: ""
-  # The GitHub app configuration.
-  # Required if githubToken is not set.
-#  githubApp:
-#    # The GitHub application ID
-#    appId: ""
-#    # The GitHub application installation ID
-#    installationId: ""
-#    # The GitHub application private key (PEM format)
-#    privateKey: ""
-
-# The secret type to use for applicationConfig values.
-# Can be either 'secret' or 'sealedSecret'.
-secretType: 'secret'
+  repoUrl: "https://github.com/example/foobar.git"
+  githubToken: "12312312312312"
 
 replicaCount: 1
 
@@ -31,7 +15,7 @@ image:
   repository: ghcr.io/nestoca/joy-generator
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: 0.1.2
 
 imagePullSecrets: []
 nameOverride: ""

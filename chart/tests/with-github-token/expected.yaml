@@ -1,4 +1,14 @@
 ---
+# Source: joy-generator/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: my-release-joy-generator-config
+stringData:
+  JOY_PLUGIN_TOKEN: "@very!l0ngands3curet0ken"
+  JOY_REPO_URL: "https://github.com/example/foobar.git"
+  JOY_GITHUB_TOKEN: "12312312312312"
+---
 # Source: joy-generator/templates/argocd-config.yaml
 apiVersion: v1
 kind: ConfigMap
@@ -58,9 +68,6 @@ spec:
       volumes:
         - name: catalog-dir
           emptyDir: {}
-        - name: github-app-private-key
-          secret:
-            secretName: my-release-joy-generator-github-app-key
       containers:
         - name: joy-generator
           securityContext:
@@ -70,13 +77,9 @@ spec:
           volumeMounts:
             - mountPath: /tmp/catalog
               name: catalog-dir
-            - mountPath: /etc/joy/config
-              name: github-app-private-key
           env:
             - name: JOY_CATALOG_DIR
               value: /tmp/catalog
-            - name: JOY_GITHUB_APP_PRIVATE_KEY_PATH
-              value: /etc/joy/config/githubApp.pem
           envFrom:
             - secretRef:
                 name: my-release-joy-generator-config
@@ -94,25 +97,3 @@ spec:
               port: http
           resources:
             {}
----
-# Source: joy-generator/templates/secret.yaml
-apiVersion: bitnami.com/v1alpha1
-kind: SealedSecret
-metadata:
-  name: my-release-joy-generator-config
-spec:
-  encryptedData:
-    JOY_PLUGIN_TOKEN: "@very!l0ngands3curet0ken"
-    JOY_REPO_URL: "https://github.com/example/foobar.git"
-    JOY_GITHUB_APP_ID: "123456"
-    JOY_GITHUB_APP_INSTALLATION_ID: "789101112"
----
-# Source: joy-generator/templates/secret.yaml
-apiVersion: bitnami.com/v1alpha1
-kind: SealedSecret
-metadata:
-  name: my-release-joy-generator-github-app-key
-spec:
-  encryptedData:
-    githubApp.pem: |
-      FOOBARLOREMISPUM
