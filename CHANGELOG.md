@@ -1,3 +1,12 @@
+## [0.0.5](https://github.com/nestoca/joy-generator/compare/v0.0.4...v0.0.5) (2023-08-17)
+
+
+### Bug Fixes
+
+* **DEVOPS-1803:** Fix status check & use json logging ([585e68b](https://github.com/nestoca/joy-generator/commit/585e68b7cef1dff84dc03baca467ddd90fbbb1f3))
+
+
+
 ## [0.0.4](https://github.com/nestoca/joy-generator/compare/v0.0.3...v0.0.4) (2023-08-16)
 
 
