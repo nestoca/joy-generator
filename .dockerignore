@@ -3,3 +3,4 @@ chart
 .github
 .editorconfig
 .gitignore
+Makefile
