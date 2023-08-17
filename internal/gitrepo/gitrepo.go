@@ -160,10 +160,11 @@ func (r *GitRepo) Status() error {
 	}
 
 	err = r.repository.Fetch(&git.FetchOptions{
-		Auth: auth,
+		Auth:  auth,
+		Depth: 1, // Only fetch the latest commit
 	})
-	if err != nil {
-		return fmt.Errorf("loading git worktree: %w", err)
+	if err != nil && !errors.Is(err, git.NoErrAlreadyUpToDate) {
+		return fmt.Errorf("fetching repo: %w", err)
 	}
 
 	return nil

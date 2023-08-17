@@ -3,7 +3,9 @@ package apiserver
 import (
 	"net/http"
 
+	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
 	"github.com/nestoca/joy-generator/internal/generator"
@@ -39,7 +41,11 @@ func New(token string, g *generator.Generator) *ApiServer {
 }
 
 func (s *ApiServer) Run() error {
-	r := gin.Default()
+	r := gin.New()
+
+	r.Use(logger.SetLogger(logger.WithLogger(func(_ *gin.Context, l zerolog.Logger) zerolog.Logger {
+		return l.Output(gin.DefaultWriter).With().Logger()
+	})))
 
 	r.GET("/api/v1/health", s.Health)
 	//goland:noinspection SpellCheckingInspection
