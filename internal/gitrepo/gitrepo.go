@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"sync"
 
 	"github.com/bradleyfalzon/ghinstallation/v2"
@@ -20,9 +21,6 @@ type GitRepo struct {
 
 	// repositoryAddress is the HTTPS git address of the catalog repositoryAddress. Ex: https://github.com/my-org/joy-catalog.git
 	url string
-
-	// ref is the git ref to check out. Ex: refs/heads/master
-	ref plumbing.ReferenceName
 
 	// ghInstallTransport is the GitHub App authentication transport. It's used to generate a token that can be used to
 	// authenticate git calls to the catalog repositoryAddress.
@@ -91,10 +89,8 @@ func (r *GitRepo) init() error {
 	if err != nil {
 		if errors.Is(err, git.ErrRepositoryNotExists) {
 			repository, err = git.PlainClone(r.dir, false, &git.CloneOptions{
-				URL:           r.url,
-				ReferenceName: r.ref,
-				Auth:          auth,
-				Depth:         1, // Only fetch the latest commit
+				URL:  r.url,
+				Auth: auth,
 			})
 			if err != nil {
 				return fmt.Errorf("cloning git repository: %w", err)
@@ -106,11 +102,6 @@ func (r *GitRepo) init() error {
 
 	r.repository = repository
 	return nil
-}
-
-func (r *GitRepo) WithRef(ref string) *GitRepo {
-	r.ref = plumbing.ReferenceName(ref)
-	return r
 }
 
 func (r *GitRepo) Directory() string {
@@ -162,11 +153,34 @@ func (r *GitRepo) Pull() error {
 
 	log.Debug().Msg("pull git repo")
 	err = w.Pull(&git.PullOptions{
-		ReferenceName: r.ref,
-		Auth:          auth,
-		Depth:         1, // Only fetch the latest commit
+		Auth:  auth,
+		Force: true,
 	})
-	if err != nil && !errors.Is(err, git.NoErrAlreadyUpToDate) {
+	// If non-fast-forward update, manually reset the branch to the remote HEAD
+	if errors.Is(err, git.NoErrAlreadyUpToDate) || errors.Is(err, git.ErrNonFastForwardUpdate) {
+		localHead, err := r.repository.Head()
+		if err != nil {
+			return fmt.Errorf("getting local HEAD: %w", err)
+		}
+
+		remoteRefName := fmt.Sprintf("refs/remotes/origin/%s", strings.Split(localHead.Name().String(), "/")[2])
+
+		remoteHeadHash, err := r.repository.ResolveRevision(plumbing.Revision(remoteRefName))
+		if err != nil {
+			return fmt.Errorf("resolving remote HEAD: %w", err)
+		}
+
+		if localHead.Hash() != *remoteHeadHash {
+			log.Debug().Msg("resetting to previous commit")
+			err = w.Reset(&git.ResetOptions{
+				Commit: *remoteHeadHash,
+				Mode:   git.HardReset,
+			})
+			if err != nil {
+				return fmt.Errorf("resetting to previous commit: %w", err)
+			}
+		}
+	} else if err != nil {
 		return fmt.Errorf("pulling git repo: %w", err)
 	}
 
@@ -183,8 +197,7 @@ func (r *GitRepo) Status() error {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 	err = r.repository.Fetch(&git.FetchOptions{
-		Auth:  auth,
-		Depth: 1, // Only fetch the latest commit
+		Auth: auth,
 	})
 	if err != nil && !errors.Is(err, git.NoErrAlreadyUpToDate) {
 		return fmt.Errorf("fetching repo: %w", err)
