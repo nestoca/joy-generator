@@ -1,3 +1,16 @@
+## [0.0.6](https://github.com/nestoca/joy-generator/compare/v0.0.5...v0.0.6) (2023-08-18)
+
+
+### Bug Fixes
+
+* **DEVOPS-1803:** Add readiness probe ([9f5097b](https://github.com/nestoca/joy-generator/commit/9f5097bae20f63b849cf5fe2a31dae086393d3a1))
+* **DEVOPS-1803:** Fix bug when remote is force-pushed ([9c94d9d](https://github.com/nestoca/joy-generator/commit/9c94d9daf364e868167a8237905d3b083ca16d4e))
+* **DEVOPS-1803:** Improve gitrepo ([b7997bf](https://github.com/nestoca/joy-generator/commit/b7997bf36440c480f1a39d279f3bf889e631da92))
+* **DEVOPS-1803:** Set default log level to INFO and add debug flag ([17b96dc](https://github.com/nestoca/joy-generator/commit/17b96dc381d43e58dc556a653dc205012d93a2cc))
+* **DEVOPS-1803:** Set GIN_MODE to release to suppress debug logs ([a9a1d24](https://github.com/nestoca/joy-generator/commit/a9a1d24fe7a89476be8b46b818d2056a2a27f480))
+
+
+
 ## [0.0.5](https://github.com/nestoca/joy-generator/compare/v0.0.4...v0.0.5) (2023-08-17)
 
 
