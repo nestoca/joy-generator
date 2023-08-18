@@ -5,11 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/bradleyfalzon/ghinstallation/v2"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
+	"github.com/rs/zerolog/log"
 )
 
 type GitRepo struct {
@@ -34,6 +36,8 @@ type GitRepo struct {
 	githubUser string
 
 	repository *git.Repository
+
+	mutex *sync.Mutex
 }
 
 // NewWithGithubApp creates a new GitRepo instance using GitHub App authentication
@@ -47,6 +51,7 @@ func NewWithGithubApp(url string, dir string, githubAppId int64, githubInstallat
 		dir:               dir,
 		url:               url,
 		ghAppInstallation: t,
+		mutex:             &sync.Mutex{},
 	}
 
 	if err := r.init(); err != nil {
@@ -63,6 +68,7 @@ func NewWithGithubToken(url string, dir string, githubToken string, githubUser s
 		url:         url,
 		githubToken: githubToken,
 		githubUser:  githubUser,
+		mutex:       &sync.Mutex{},
 	}
 
 	if err := r.init(); err != nil {
@@ -78,14 +84,24 @@ func (r *GitRepo) init() error {
 		return fmt.Errorf("getting git credentials: %w", err)
 	}
 
-	repository, err := git.PlainClone(r.dir, false, &git.CloneOptions{
-		URL:           r.url,
-		ReferenceName: r.ref,
-		Auth:          auth,
-		Depth:         1, // Only fetch the latest commit
-	})
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+	log.Debug().Msg("opening git repository")
+	repository, err := git.PlainOpen(r.dir)
 	if err != nil {
-		return fmt.Errorf("cloning git repository: %w", err)
+		if errors.Is(err, git.ErrRepositoryNotExists) {
+			repository, err = git.PlainClone(r.dir, false, &git.CloneOptions{
+				URL:           r.url,
+				ReferenceName: r.ref,
+				Auth:          auth,
+				Depth:         1, // Only fetch the latest commit
+			})
+			if err != nil {
+				return fmt.Errorf("cloning git repository: %w", err)
+			}
+		} else {
+			return fmt.Errorf("opening git repository: %w", err)
+		}
 	}
 
 	r.repository = repository
@@ -135,11 +151,16 @@ func (r *GitRepo) Pull() error {
 		return fmt.Errorf("getting git authentication credentials: %w", err)
 	}
 
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+
+	log.Debug().Msg("load git worktree")
 	w, err := r.repository.Worktree()
 	if err != nil {
 		return fmt.Errorf("loading git worktree: %w", err)
 	}
 
+	log.Debug().Msg("pull git repo")
 	err = w.Pull(&git.PullOptions{
 		ReferenceName: r.ref,
 		Auth:          auth,
@@ -159,6 +180,8 @@ func (r *GitRepo) Status() error {
 		return fmt.Errorf("getting git authentication credentials: %w", err)
 	}
 
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
 	err = r.repository.Fetch(&git.FetchOptions{
 		Auth:  auth,
 		Depth: 1, // Only fetch the latest commit
