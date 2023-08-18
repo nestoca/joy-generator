@@ -14,10 +14,10 @@ kind: Service
 metadata:
   name: my-release-joy-generator
   labels:
-    helm.sh/chart: joy-generator-0.0.4
+    helm.sh/chart: joy-generator-0.0.5
     app.kubernetes.io/name: joy-generator
     app.kubernetes.io/instance: my-release
-    app.kubernetes.io/version: "0.0.4"
+    app.kubernetes.io/version: "0.0.5"
     app.kubernetes.io/managed-by: Helm
 spec:
   type: ClusterIP
@@ -36,10 +36,10 @@ kind: Deployment
 metadata:
   name: my-release-joy-generator
   labels:
-    helm.sh/chart: joy-generator-0.0.4
+    helm.sh/chart: joy-generator-0.0.5
     app.kubernetes.io/name: joy-generator
     app.kubernetes.io/instance: my-release
-    app.kubernetes.io/version: "0.0.4"
+    app.kubernetes.io/version: "0.0.5"
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
@@ -75,6 +75,8 @@ spec:
           env:
             - name: JOY_CATALOG_DIR
               value: /tmp/catalog
+            - name: GIN_MODE
+              value: release
             - name: JOY_GITHUB_APP_PRIVATE_KEY_PATH
               value: /etc/joy/config/githubApp.pem
           envFrom:
@@ -90,7 +92,7 @@ spec:
               port: http
           readinessProbe:
             httpGet:
-              path: /api/v1/health
+              path: /api/v1/readiness
               port: http
           resources:
             {}

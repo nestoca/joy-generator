@@ -1,8 +1,10 @@
 package main
 
 import (
+	"flag"
 	"os"
 
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
 	"github.com/nestoca/joy-generator/internal/apiserver"
@@ -12,6 +14,16 @@ import (
 )
 
 func main() {
+	debug := flag.Bool("debug", false, "sets log level to debug")
+
+	flag.Parse()
+
+	// Default level for this example is info, unless debug flag is present
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	if *debug {
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	}
+
 	cfg, ghAppCfg, err := config.Load()
 	if err != nil {
 		log.Error().Err(err).Msg("failed to load config")
