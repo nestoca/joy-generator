@@ -48,6 +48,7 @@ func (s *ApiServer) Run() error {
 	})))
 
 	r.GET("/api/v1/health", s.Health)
+	r.GET("/api/v1/readiness", s.Readiness)
 	//goland:noinspection SpellCheckingInspection
 	r.POST("/api/v1/getparams.execute", s.GetParamsExecute)
 
@@ -55,8 +56,14 @@ func (s *ApiServer) Run() error {
 }
 
 func (s *ApiServer) Health(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"status": "ok",
+	})
+}
+
+func (s *ApiServer) Readiness(c *gin.Context) {
 	if err := s.generator.Status(); err != nil {
-		log.Error().Err(err).Msg("health check failed")
+		log.Error().Err(err).Msg("readiness check failed")
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": "error",
 			"detail": err.Error(),

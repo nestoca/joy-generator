@@ -67,12 +67,10 @@ spec:
             httpGet:
               path: /api/v1/health
               port: http
-            periodSeconds: 30
           readinessProbe:
             httpGet:
-              path: /api/v1/health
+              path: /api/v1/readiness
               port: http
-            periodSeconds: 30
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
