@@ -30,6 +30,8 @@ applicationConfig:
 # The secret type to use for applicationConfig values.
 # Can be either 'secret' or 'sealedSecret'.
 secretType: 'secret'
+# Additional annotations for sealed secrets
+sealedSecretAnnotations: {}
 
 replicaCount: 1
 

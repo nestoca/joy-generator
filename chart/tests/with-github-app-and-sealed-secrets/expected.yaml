@@ -14,10 +14,10 @@ kind: Service
 metadata:
   name: my-release-joy-generator
   labels:
-    helm.sh/chart: joy-generator-0.0.5
+    helm.sh/chart: joy-generator-0.0.6
     app.kubernetes.io/name: joy-generator
     app.kubernetes.io/instance: my-release
-    app.kubernetes.io/version: "0.0.5"
+    app.kubernetes.io/version: "0.0.6"
     app.kubernetes.io/managed-by: Helm
 spec:
   type: ClusterIP
@@ -36,10 +36,10 @@ kind: Deployment
 metadata:
   name: my-release-joy-generator
   labels:
-    helm.sh/chart: joy-generator-0.0.5
+    helm.sh/chart: joy-generator-0.0.6
     app.kubernetes.io/name: joy-generator
     app.kubernetes.io/instance: my-release
-    app.kubernetes.io/version: "0.0.5"
+    app.kubernetes.io/version: "0.0.6"
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
@@ -102,6 +102,8 @@ apiVersion: bitnami.com/v1alpha1
 kind: SealedSecret
 metadata:
   name: my-release-joy-generator-config
+  annotations:
+    sealedsecrets.bitnami.com/cluster-wide: "true"
 spec:
   encryptedData:    
     JOY_PLUGIN_TOKEN: "@very!l0ngands3curet0ken"
@@ -114,6 +116,8 @@ apiVersion: bitnami.com/v1alpha1
 kind: SealedSecret
 metadata:
   name: my-release-joy-generator-github-app-key
+  annotations:
+    sealedsecrets.bitnami.com/cluster-wide: "true"
 spec:
   encryptedData:
     githubApp.pem: |

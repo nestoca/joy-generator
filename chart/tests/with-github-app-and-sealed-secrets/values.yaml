@@ -15,5 +15,8 @@ applicationConfig:
 
 secretType: 'sealedSecret'
 
+sealedSecretAnnotations:
+  sealedsecrets.bitnami.com/cluster-wide: "true"
+
 image:
   tag: 0.1.2
