@@ -1,3 +1,12 @@
+## [0.0.7](https://github.com/nestoca/joy-generator/compare/v0.0.6...v0.0.7) (2023-08-21)
+
+
+### Bug Fixes
+
+* **DEVOPS-1803:** Add annotations for sealedsecrets ([40c25f9](https://github.com/nestoca/joy-generator/commit/40c25f9c75f31d4ecfb499ca0cada9f68a38db14))
+
+
+
 ## [0.0.6](https://github.com/nestoca/joy-generator/compare/v0.0.5...v0.0.6) (2023-08-18)
 
 
