@@ -1,3 +1,13 @@
+# [0.1.0](https://github.com/nestoca/joy-generator/compare/v0.0.7...v0.1.0) (2023-11-22)
+
+
+### Features
+
+* **PL-2009:** Render values with 2-space indents ([b5a119f](https://github.com/nestoca/joy-generator/commit/b5a119f1d15c027436a06920907c989ac173e50c))
+* **PL-2009:** Update github.com/nestoca/joy to latest version ([07aa349](https://github.com/nestoca/joy-generator/commit/07aa349c5033268bb67a0bdc4fddcb69d8cc80e0))
+
+
+
 ## [0.0.7](https://github.com/nestoca/joy-generator/compare/v0.0.6...v0.0.7) (2023-08-21)
 
 
