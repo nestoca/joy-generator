@@ -13,12 +13,15 @@ import (
 // RenderValues renders the values of the given release and produces a yaml string, processing any go template
 // directives found in the values.
 func RenderValues(release *v1alpha1.Release) (string, error) {
-	valuesStr, err := yaml.Marshal(release.Spec.Values)
+	buf := &bytes.Buffer{}
+	encoder := yaml.NewEncoder(buf)
+	encoder.SetIndent(2)
+	err := encoder.Encode(release.Spec.Values)
 	if err != nil {
 		return "", fmt.Errorf("marshalling release values: %w", err)
 	}
 
-	tpl, err := template.New("values").Parse(string(valuesStr))
+	tpl, err := template.New("values").Parse(string(buf.Bytes()))
 	if err != nil {
 		return "", fmt.Errorf("parsing values template: %w", err)
 	}
