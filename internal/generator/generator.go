@@ -88,12 +88,23 @@ func (r *Generator) Run() ([]*Result, error) {
 
 				values, err := joy.ReleaseValues(release, release.Environment, cfg.ValueMapping)
 				if err != nil {
-					return nil, err
+					log.
+						Error().
+						Err(err).
+						Str("release", release.Name).Str("environment", release.Environment.Name).
+						Msgf("error computing values for release %s", release.Name)
+
+					// we don't want to fail the whole process if rendering one release fails, so we'll just skip this one
+					continue
 				}
 
 				renderedValues, err := yaml.Marshal(values)
 				if err != nil {
-					log.Error().Err(err).Str("release", release.Name).Str("environment", release.Environment.Name).Msgf("error rendering values for release %s", release.Name)
+					log.
+						Error().
+						Err(err).
+						Str("release", release.Name).Str("environment", release.Environment.Name).
+						Msgf("error marshaling values for release %s", release.Name)
 
 					// we don't want to fail the whole process if rendering one release fails, so we'll just skip this one
 					continue
