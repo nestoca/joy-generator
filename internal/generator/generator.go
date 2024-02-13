@@ -2,6 +2,8 @@ package generator
 
 import (
 	"fmt"
+	"net/url"
+	"strings"
 
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
@@ -57,11 +59,32 @@ func (r *Generator) Run() ([]*Result, error) {
 		return nil, fmt.Errorf("loading catalog config: %w", err)
 	}
 
+	chartURL, chartName := func() (base, name string) {
+		if cfg.DefaultChart == "" {
+			return
+		}
+		value, err := url.Parse(cfg.DefaultChart)
+		if value.Scheme == "" {
+			value, err = url.Parse("oci://" + cfg.DefaultChart)
+		}
+		if err != nil {
+			return
+		}
+		return value.Host, strings.TrimPrefix(value.Path, "/")
+	}()
+
 	var reconciledReleases []*Result
 	for _, crossRelease := range joyCatalog.Releases.Items {
 		for _, release := range crossRelease.Releases {
 			if release != nil {
 				log.Debug().Str("release", release.Name).Str("environment", release.Environment.Name).Msg("processing release")
+
+				if release.Spec.Chart.RepoUrl == "" {
+					release.Spec.Chart.RepoUrl = chartURL
+				}
+				if release.Spec.Chart.Name == "" {
+					release.Spec.Chart.Name = chartName
+				}
 
 				values, err := joy.ReleaseValues(release, release.Environment, cfg.ValueMapping)
 				if err != nil {
