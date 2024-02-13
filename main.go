@@ -52,11 +52,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = apiserver.New(
-		cfg.PluginToken,
-		generator.New(repo),
-	).Run()
-	if err != nil {
+	server := apiserver.New(cfg.PluginToken, generator.New(repo))
+
+	if err := server.Run(); err != nil {
 		log.Error().Err(err).Msg("failed to start server")
 		os.Exit(1)
 	}
