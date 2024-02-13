@@ -4,9 +4,11 @@ import (
 	"fmt"
 
 	"github.com/rs/zerolog/log"
+	"gopkg.in/yaml.v3"
 
 	"github.com/nestoca/joy-generator/internal/gitrepo"
 	"github.com/nestoca/joy/api/v1alpha1"
+	joy "github.com/nestoca/joy/pkg"
 	"github.com/nestoca/joy/pkg/catalog"
 )
 
@@ -35,8 +37,7 @@ func New(repo *gitrepo.GitRepo) *Generator {
 // will be deployed and the rendered values string.
 func (r *Generator) Run() ([]*Result, error) {
 	// Make sure we have the latest catalog changes
-	err := r.repo.Pull()
-	if err != nil {
+	if err := r.repo.Pull(); err != nil {
 		return nil, fmt.Errorf("pulling git repo: %w", err)
 	}
 
@@ -51,13 +52,23 @@ func (r *Generator) Run() ([]*Result, error) {
 		return nil, fmt.Errorf("loading catalog: %w", err)
 	}
 
+	cfg, err := joy.LoadCatalogConfig(r.repo.Directory())
+	if err != nil {
+		return nil, fmt.Errorf("loading catalog config: %w", err)
+	}
+
 	var reconciledReleases []*Result
 	for _, crossRelease := range joyCatalog.Releases.Items {
 		for _, release := range crossRelease.Releases {
 			if release != nil {
 				log.Debug().Str("release", release.Name).Str("environment", release.Environment.Name).Msg("processing release")
 
-				renderedValues, err := RenderValues(release)
+				values, err := joy.ReleaseValues(release, release.Environment, cfg.ValueMapping)
+				if err != nil {
+					return nil, err
+				}
+
+				renderedValues, err := yaml.Marshal(values)
 				if err != nil {
 					log.Error().Err(err).Str("release", release.Name).Str("environment", release.Environment.Name).Msgf("error rendering values for release %s", release.Name)
 
@@ -68,7 +79,7 @@ func (r *Generator) Run() ([]*Result, error) {
 				reconciledReleases = append(reconciledReleases, &Result{
 					Release:     release,
 					Environment: release.Environment,
-					Values:      renderedValues,
+					Values:      string(renderedValues),
 				})
 			}
 		}
