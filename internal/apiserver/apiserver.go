@@ -9,10 +9,11 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/nestoca/joy-generator/internal/generator"
+	"github.com/nestoca/joy-generator/internal/gitrepo"
 )
 
 type GeneratorOutput struct {
-	Parameters []*generator.Result `json:"parameters"`
+	Parameters []generator.Result `json:"parameters"`
 }
 
 type GetParamsResponse struct {
@@ -31,38 +32,38 @@ type GetParamsRequest struct {
 type ApiServer struct {
 	token     string
 	generator *generator.Generator
+	repo      *gitrepo.GitRepo
 }
 
-func New(token string, g *generator.Generator) *ApiServer {
+func New(token string, g *generator.Generator, repo *gitrepo.GitRepo) *ApiServer {
 	return &ApiServer{
 		token:     token,
 		generator: g,
+		repo:      repo,
 	}
 }
 
 func (s *ApiServer) Run() error {
-	r := gin.New()
+	router := gin.New()
 
-	r.Use(logger.SetLogger(logger.WithLogger(func(_ *gin.Context, l zerolog.Logger) zerolog.Logger {
+	router.Use(logger.SetLogger(logger.WithLogger(func(_ *gin.Context, l zerolog.Logger) zerolog.Logger {
 		return l.Output(gin.DefaultWriter).With().Logger()
 	})))
 
-	r.GET("/api/v1/health", s.Health)
-	r.GET("/api/v1/readiness", s.Readiness)
+	router.GET("/api/v1/health", s.Health)
+	router.GET("/api/v1/readiness", s.Readiness)
 	//goland:noinspection SpellCheckingInspection
-	r.POST("/api/v1/getparams.execute", s.GetParamsExecute)
+	router.POST("/api/v1/getparams.execute", s.GetParamsExecute)
 
-	return r.Run()
+	return router.Run()
 }
 
 func (s *ApiServer) Health(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"status": "ok",
-	})
+	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
 
 func (s *ApiServer) Readiness(c *gin.Context) {
-	if err := s.generator.Status(); err != nil {
+	if err := s.repo.Status(); err != nil {
 		log.Error().Err(err).Msg("readiness check failed")
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": "error",
@@ -71,9 +72,7 @@ func (s *ApiServer) Readiness(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status": "ok",
-	})
+	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
 
 func (s *ApiServer) GetParamsExecute(c *gin.Context) {

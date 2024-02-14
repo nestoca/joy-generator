@@ -15,7 +15,7 @@ import (
 )
 
 type Generator struct {
-	repo *gitrepo.GitRepo
+	loadJoyContext JoyLoaderFunc
 }
 
 type Result struct {
@@ -29,43 +29,57 @@ type Result struct {
 	Values string `json:"values"`
 }
 
-func New(repo *gitrepo.GitRepo) *Generator {
-	return &Generator{
-		repo: repo,
+type JoyContext struct {
+	Catalog *catalog.Catalog
+	Config  *joy.Config
+}
+
+type JoyLoaderFunc func() (*JoyContext, error)
+
+func RepoLoader(repo *gitrepo.GitRepo) JoyLoaderFunc {
+	return func() (*JoyContext, error) {
+		if err := repo.Pull(); err != nil {
+			return nil, fmt.Errorf("pulling git repo: %w", err)
+		}
+
+		cat, err := catalog.Load(catalog.LoadOpts{
+			Dir:          repo.Directory(),
+			LoadEnvs:     true,
+			LoadReleases: true,
+			ResolveRefs:  true,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("loading catalog: %w", err)
+		}
+
+		cfg, err := joy.LoadCatalogConfig(repo.Directory())
+		if err != nil {
+			return nil, fmt.Errorf("loading catalog config: %w", err)
+		}
+
+		return &JoyContext{Catalog: cat, Config: cfg}, nil
 	}
+}
+
+func New(load JoyLoaderFunc) *Generator {
+	return &Generator{load}
 }
 
 // Run runs the generator and returns a slice of results. Each result contains the release, the environment where it
 // will be deployed and the rendered values string.
-func (r *Generator) Run() ([]*Result, error) {
-	// Make sure we have the latest catalog changes
-	if err := r.repo.Pull(); err != nil {
-		return nil, fmt.Errorf("pulling git repo: %w", err)
-	}
-
-	// Load Releases and relevant environment info (cluster name & namespace)
-	joyCatalog, err := catalog.Load(catalog.LoadOpts{
-		Dir:          r.repo.Directory(),
-		LoadEnvs:     true,
-		LoadReleases: true,
-		ResolveRefs:  true,
-	})
+func (r *Generator) Run() ([]Result, error) {
+	joyctx, err := r.loadJoyContext()
 	if err != nil {
-		return nil, fmt.Errorf("loading catalog: %w", err)
-	}
-
-	cfg, err := joy.LoadCatalogConfig(r.repo.Directory())
-	if err != nil {
-		return nil, fmt.Errorf("loading catalog config: %w", err)
+		return nil, fmt.Errorf("loading joy context: %w", err)
 	}
 
 	chartURL, chartName := func() (base, name string) {
-		if cfg.DefaultChart == "" {
+		if joyctx.Config.DefaultChart == "" {
 			return
 		}
-		value, err := url.Parse(cfg.DefaultChart)
+		value, err := url.Parse(joyctx.Config.DefaultChart)
 		if value.Scheme == "" {
-			value, err = url.Parse("oci://" + cfg.DefaultChart)
+			value, err = url.Parse("oci://" + joyctx.Config.DefaultChart)
 		}
 		if err != nil {
 			return
@@ -73,8 +87,8 @@ func (r *Generator) Run() ([]*Result, error) {
 		return value.Host, strings.TrimPrefix(value.Path, "/")
 	}()
 
-	var reconciledReleases []*Result
-	for _, crossRelease := range joyCatalog.Releases.Items {
+	var reconciledReleases []Result
+	for _, crossRelease := range joyctx.Catalog.Releases.Items {
 		for _, release := range crossRelease.Releases {
 			if release != nil {
 				log.Debug().Str("release", release.Name).Str("environment", release.Environment.Name).Msg("processing release")
@@ -86,7 +100,7 @@ func (r *Generator) Run() ([]*Result, error) {
 					release.Spec.Chart.Name = chartName
 				}
 
-				values, err := joy.ReleaseValues(release, release.Environment, cfg.ValueMapping)
+				values, err := joy.ReleaseValues(release, release.Environment, joyctx.Config.ValueMapping)
 				if err != nil {
 					log.
 						Error().
@@ -110,7 +124,7 @@ func (r *Generator) Run() ([]*Result, error) {
 					continue
 				}
 
-				reconciledReleases = append(reconciledReleases, &Result{
+				reconciledReleases = append(reconciledReleases, Result{
 					Release:     release,
 					Environment: release.Environment,
 					Values:      string(renderedValues),
@@ -120,8 +134,4 @@ func (r *Generator) Run() ([]*Result, error) {
 	}
 
 	return reconciledReleases, nil
-}
-
-func (r *Generator) Status() error {
-	return r.repo.Status()
 }
