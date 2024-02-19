@@ -1,3 +1,12 @@
+## [0.2.1](https://github.com/nestoca/joy-generator/compare/v0.2.0...v0.2.1) (2024-02-19)
+
+
+### Bug Fixes
+
+* **PL-2372): Revert "fix(PL-2372:** use default gh token" ([e633643](https://github.com/nestoca/joy-generator/commit/e633643f112fb7e0d79ef3a54a13b7e948c2c950))
+
+
+
 # [0.1.0](https://github.com/nestoca/joy-generator/compare/v0.0.7...v0.1.0) (2023-11-22)
 
 
