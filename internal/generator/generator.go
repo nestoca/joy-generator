@@ -42,12 +42,7 @@ func RepoLoader(repo *gitrepo.GitRepo) JoyLoaderFunc {
 			return nil, fmt.Errorf("pulling git repo: %w", err)
 		}
 
-		cat, err := catalog.Load(catalog.LoadOpts{
-			Dir:          repo.Directory(),
-			LoadEnvs:     true,
-			LoadReleases: true,
-			ResolveRefs:  true,
-		})
+		cat, err := catalog.Load(catalog.LoadOpts{Dir: repo.Directory()})
 		if err != nil {
 			return nil, fmt.Errorf("loading catalog: %w", err)
 		}
