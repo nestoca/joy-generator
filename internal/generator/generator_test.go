@@ -14,7 +14,7 @@ func TestGenerator(t *testing.T) {
 		Name            string
 		Release         *v1alpha1.Release
 		DefaultChart    string
-		ValueMapping    map[string]any
+		ValueMapping    *joy.ValueMapping
 		ExpectedRelease *v1alpha1.Release
 		ExpectedValues  string
 	}{
@@ -80,10 +80,10 @@ func TestGenerator(t *testing.T) {
 				},
 			},
 			DefaultChart: "nesto.repo/test-chart",
-			ValueMapping: map[string]any{
+			ValueMapping: &joy.ValueMapping{Mappings: map[string]any{
 				"annotations.test": true,
 				"image":            "image@{{ .Release.Spec.Version }}",
-			},
+			}},
 			ExpectedRelease: &v1alpha1.Release{
 				ApiVersion:      "joy.nesto.ca/v1alpha1",
 				Kind:            "Release",
