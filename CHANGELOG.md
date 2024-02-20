@@ -1,3 +1,12 @@
+## [0.2.2](https://github.com/nestoca/joy-generator/compare/v0.2.1...v0.2.2) (2024-02-20)
+
+
+### Bug Fixes
+
+* **PL-2372:** update-joy ([111d955](https://github.com/nestoca/joy-generator/commit/111d95557774e84c45fab6a2ebdc984e57221f8e))
+
+
+
 ## [0.2.1](https://github.com/nestoca/joy-generator/compare/v0.2.0...v0.2.1) (2024-02-19)
 
 
