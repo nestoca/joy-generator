@@ -3,10 +3,11 @@ package generator
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/nestoca/joy/api/v1alpha1"
 	joy "github.com/nestoca/joy/pkg"
 	"github.com/nestoca/joy/pkg/catalog"
-	"github.com/stretchr/testify/require"
 )
 
 func TestGenerator(t *testing.T) {
@@ -38,6 +39,11 @@ func TestGenerator(t *testing.T) {
 					Kind:                "Environment",
 					EnvironmentMetadata: v1alpha1.EnvironmentMetadata{Name: "test"},
 				},
+				Project: &v1alpha1.Project{
+					ApiVersion:      "joy.nesto.ca/v1alpha1",
+					Kind:            "Project",
+					ProjectMetadata: v1alpha1.ProjectMetadata{Name: "test"},
+				},
 			},
 			DefaultChart: "default/default",
 			ExpectedRelease: &v1alpha1.Release{
@@ -59,6 +65,11 @@ func TestGenerator(t *testing.T) {
 					Kind:                "Environment",
 					EnvironmentMetadata: v1alpha1.EnvironmentMetadata{Name: "test"},
 				},
+				Project: &v1alpha1.Project{
+					ApiVersion:      "joy.nesto.ca/v1alpha1",
+					Kind:            "Project",
+					ProjectMetadata: v1alpha1.ProjectMetadata{Name: "test"},
+				},
 			},
 			ExpectedValues: "{}\n",
 		},
@@ -77,6 +88,11 @@ func TestGenerator(t *testing.T) {
 					ApiVersion:          "joy.nesto.ca/v1alpha1",
 					Kind:                "Environment",
 					EnvironmentMetadata: v1alpha1.EnvironmentMetadata{Name: "test"},
+				},
+				Project: &v1alpha1.Project{
+					ApiVersion:      "joy.nesto.ca/v1alpha1",
+					Kind:            "Project",
+					ProjectMetadata: v1alpha1.ProjectMetadata{Name: "test"},
 				},
 			},
 			DefaultChart: "nesto.repo/test-chart",
@@ -102,6 +118,11 @@ func TestGenerator(t *testing.T) {
 					ApiVersion:          "joy.nesto.ca/v1alpha1",
 					Kind:                "Environment",
 					EnvironmentMetadata: v1alpha1.EnvironmentMetadata{Name: "test"},
+				},
+				Project: &v1alpha1.Project{
+					ApiVersion:      "joy.nesto.ca/v1alpha1",
+					Kind:            "Project",
+					ProjectMetadata: v1alpha1.ProjectMetadata{Name: "test"},
 				},
 			},
 			ExpectedValues: "annotations:\n    test: true\nimage: image@v1\n",

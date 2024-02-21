@@ -25,6 +25,9 @@ type Result struct {
 	// Environment holds the environment info where the release will be deployed. The full spec is not loaded to minimize the payload size
 	Environment *v1alpha1.Environment `json:"environment"`
 
+	// Project holds the project info of the release.
+	Project *v1alpha1.Project `json:"project"`
+
 	// Values is a yaml string that is the Release.spec.values rendered with any templated fields
 	Values string `json:"values"`
 }
@@ -122,6 +125,7 @@ func (r *Generator) Run() ([]Result, error) {
 				reconciledReleases = append(reconciledReleases, Result{
 					Release:     release,
 					Environment: release.Environment,
+					Project:     release.Project,
 					Values:      string(renderedValues),
 				})
 			}
