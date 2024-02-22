@@ -1,3 +1,12 @@
+# [0.3.0](https://github.com/nestoca/joy-generator/compare/v0.2.2...v0.3.0) (2024-02-22)
+
+
+### Features
+
+* **PL-2386:** Include project information in results ([e8269c3](https://github.com/nestoca/joy-generator/commit/e8269c3db2bce0065181fbaafa8f459c6027e08c))
+
+
+
 ## [0.2.2](https://github.com/nestoca/joy-generator/compare/v0.2.1...v0.2.2) (2024-02-20)
 
 
