@@ -21,6 +21,7 @@ jobs:
         uses: silphid/actions/test-chart@v1
         with:
           work-dir: chart
+          args: --namespace my-namespace --release my-release --app-version 1.0.0 --chart-version 1.0.0
   test-app:
     runs-on: ubuntu-latest
     steps:
