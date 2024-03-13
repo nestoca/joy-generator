@@ -1,3 +1,12 @@
+## [0.3.1](https://github.com/nestoca/joy-generator/compare/v0.3.0...v0.3.1) (2024-03-13)
+
+
+### Bug Fixes
+
+* **PL-2418:** update joy to support !local tags ([e697712](https://github.com/nestoca/joy-generator/commit/e6977126ca47e08fcbf44ab9df25da60f250fdfa))
+
+
+
 # [0.3.0](https://github.com/nestoca/joy-generator/compare/v0.2.2...v0.3.0) (2024-02-22)
 
 
