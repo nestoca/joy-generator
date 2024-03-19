@@ -11,10 +11,24 @@ import (
 )
 
 func TestGenerator(t *testing.T) {
+	baseCharts := map[string]joy.HelmChart{
+		"default": {
+			RepoURL: "test",
+			Name:    "chart",
+			Version: "0.0.0",
+		},
+		"custom": {
+			RepoURL: "nesto",
+			Name:    "test-chart",
+			Version: "6.6.6",
+		},
+	}
+
 	cases := []struct {
 		Name            string
 		Release         *v1alpha1.Release
-		DefaultChart    string
+		DefaultChartRef string
+		Charts          map[string]joy.HelmChart
 		ValueMapping    *joy.ValueMapping
 		ExpectedRelease *v1alpha1.Release
 		ExpectedValues  string
@@ -45,7 +59,8 @@ func TestGenerator(t *testing.T) {
 					ProjectMetadata: v1alpha1.ProjectMetadata{Name: "test"},
 				},
 			},
-			DefaultChart: "default/default",
+			DefaultChartRef: "default",
+			Charts:          baseCharts,
 			ExpectedRelease: &v1alpha1.Release{
 				ApiVersion:      "joy.nesto.ca/v1alpha1",
 				Kind:            "Release",
@@ -95,7 +110,8 @@ func TestGenerator(t *testing.T) {
 					ProjectMetadata: v1alpha1.ProjectMetadata{Name: "test"},
 				},
 			},
-			DefaultChart: "nesto.repo/test-chart",
+			DefaultChartRef: "custom",
+			Charts:          baseCharts,
 			ValueMapping: &joy.ValueMapping{Mappings: map[string]any{
 				"annotations.test": true,
 				"image":            "image@{{ .Release.Spec.Version }}",
@@ -109,7 +125,7 @@ func TestGenerator(t *testing.T) {
 					Version: "v1",
 					Chart: v1alpha1.ReleaseChart{
 						Name:    "test-chart",
-						RepoUrl: "nesto.repo",
+						RepoUrl: "nesto",
 						Version: "test-version",
 					},
 					Values: map[string]interface{}{},
@@ -134,7 +150,11 @@ func TestGenerator(t *testing.T) {
 			generator := New(func() (*JoyContext, error) {
 				return &JoyContext{
 					Catalog: BuildCatalogFromRelease(tc.Release),
-					Config:  &joy.Config{DefaultChart: tc.DefaultChart, ValueMapping: tc.ValueMapping},
+					Config: &joy.Config{
+						DefaultChartRef: tc.DefaultChartRef,
+						Charts:          tc.Charts,
+						ValueMapping:    tc.ValueMapping,
+					},
 				}, nil
 			})
 
@@ -150,7 +170,7 @@ func TestGenerator(t *testing.T) {
 
 func BuildCatalogFromRelease(release *v1alpha1.Release) *catalog.Catalog {
 	return &catalog.Catalog{
-		Releases: &catalog.ReleaseList{
+		Releases: catalog.ReleaseList{
 			Items: []*catalog.Release{
 				{
 					Name:     release.ReleaseMetadata.Name,

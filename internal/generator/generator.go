@@ -2,8 +2,6 @@ package generator
 
 import (
 	"fmt"
-	"net/url"
-	"strings"
 
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
@@ -45,14 +43,14 @@ func RepoLoader(repo *gitrepo.GitRepo) JoyLoaderFunc {
 			return nil, fmt.Errorf("pulling git repo: %w", err)
 		}
 
-		cat, err := catalog.Load(catalog.LoadOpts{Dir: repo.Directory()})
-		if err != nil {
-			return nil, fmt.Errorf("loading catalog: %w", err)
-		}
-
 		cfg, err := joy.LoadCatalogConfig(repo.Directory())
 		if err != nil {
 			return nil, fmt.Errorf("loading catalog config: %w", err)
+		}
+
+		cat, err := catalog.Load(repo.Directory(), cfg.KnownChartRefs())
+		if err != nil {
+			return nil, fmt.Errorf("loading catalog: %w", err)
 		}
 
 		return &JoyContext{Catalog: cat, Config: cfg}, nil
@@ -71,34 +69,27 @@ func (r *Generator) Run() ([]Result, error) {
 		return nil, fmt.Errorf("loading joy context: %w", err)
 	}
 
-	chartURL, chartName := func() (base, name string) {
-		if joyctx.Config.DefaultChart == "" {
-			return
-		}
-		value, err := url.Parse(joyctx.Config.DefaultChart)
-		if value.Scheme == "" {
-			value, err = url.Parse("oci://" + joyctx.Config.DefaultChart)
-		}
-		if err != nil {
-			return
-		}
-		return value.Host, strings.TrimPrefix(value.Path, "/")
-	}()
-
 	var reconciledReleases []Result
 	for _, crossRelease := range joyctx.Catalog.Releases.Items {
 		for _, release := range crossRelease.Releases {
 			if release != nil {
 				log.Debug().Str("release", release.Name).Str("environment", release.Environment.Name).Msg("processing release")
 
-				if release.Spec.Chart.RepoUrl == "" {
-					release.Spec.Chart.RepoUrl = chartURL
-				}
-				if release.Spec.Chart.Name == "" {
-					release.Spec.Chart.Name = chartName
+				chart, err := joy.ChartFromRelease(release, joyctx.Config.Charts, joyctx.Config.DefaultChartRef)
+				if err != nil {
+					log.
+						Error().
+						Err(err).
+						Str("release", release.Name).Str("environment", release.Environment.Name).
+						Msgf("error getting chart for release %s", release.Name)
+					continue
 				}
 
-				values, err := joy.ReleaseValues(release, release.Environment, joyctx.Config.ValueMapping)
+				release.Spec.Chart.RepoUrl = chart.RepoURL
+				release.Spec.Chart.Name = chart.Name
+				release.Spec.Chart.Version = chart.Version
+
+				values, err := joy.ReleaseValues(release, joyctx.Config.ValueMapping)
 				if err != nil {
 					log.
 						Error().
