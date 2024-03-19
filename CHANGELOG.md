@@ -1,3 +1,12 @@
+# [0.4.0](https://github.com/nestoca/joy-generator/compare/v0.3.1...v0.4.0) (2024-03-19)
+
+
+### Features
+
+* **PL-2554:** support chart refs ([eac3533](https://github.com/nestoca/joy-generator/commit/eac3533799e0825d6cea886cf5f809a393e28f46))
+
+
+
 ## [0.3.1](https://github.com/nestoca/joy-generator/compare/v0.3.0...v0.3.1) (2024-03-13)
 
 
