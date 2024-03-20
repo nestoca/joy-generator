@@ -4,10 +4,10 @@ go 1.22.0
 
 require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.9.0
-	github.com/gin-contrib/logger v1.0.0
+	github.com/davidmdm/conf v0.0.4
+	github.com/davidmdm/x/xcontext v0.0.2
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-git/go-git/v5 v5.11.0
-	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/nestoca/joy v0.39.0
 	github.com/rs/zerolog v1.32.0
 	github.com/stretchr/testify v1.9.0

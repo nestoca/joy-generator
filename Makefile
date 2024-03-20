@@ -2,3 +2,6 @@
 kind-build:
 	docker build -t localhost:5001/joy-generator:latest .
 	docker push localhost:5001/joy-generator:latest
+
+fmt:
+	goimports --local github.com/nestoca/joy-generator -w .
