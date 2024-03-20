@@ -3,17 +3,19 @@ package generator
 import (
 	"fmt"
 
-	"github.com/rs/zerolog/log"
+	"github.com/rs/zerolog"
 	"gopkg.in/yaml.v3"
 
-	"github.com/nestoca/joy-generator/internal/gitrepo"
 	"github.com/nestoca/joy/api/v1alpha1"
 	joy "github.com/nestoca/joy/pkg"
 	"github.com/nestoca/joy/pkg/catalog"
+
+	"github.com/nestoca/joy-generator/internal/github"
 )
 
 type Generator struct {
-	loadJoyContext JoyLoaderFunc
+	LoadJoyContext JoyLoaderFunc
+	Logger         zerolog.Logger
 }
 
 type Result struct {
@@ -37,7 +39,7 @@ type JoyContext struct {
 
 type JoyLoaderFunc func() (*JoyContext, error)
 
-func RepoLoader(repo *gitrepo.GitRepo) JoyLoaderFunc {
+func RepoLoader(repo *github.Repo) JoyLoaderFunc {
 	return func() (*JoyContext, error) {
 		if err := repo.Pull(); err != nil {
 			return nil, fmt.Errorf("pulling git repo: %w", err)
@@ -57,14 +59,10 @@ func RepoLoader(repo *gitrepo.GitRepo) JoyLoaderFunc {
 	}
 }
 
-func New(load JoyLoaderFunc) *Generator {
-	return &Generator{load}
-}
-
 // Run runs the generator and returns a slice of results. Each result contains the release, the environment where it
 // will be deployed and the rendered values string.
-func (r *Generator) Run() ([]Result, error) {
-	joyctx, err := r.loadJoyContext()
+func (generator *Generator) Run() ([]Result, error) {
+	joyctx, err := generator.LoadJoyContext()
 	if err != nil {
 		return nil, fmt.Errorf("loading joy context: %w", err)
 	}
@@ -72,54 +70,56 @@ func (r *Generator) Run() ([]Result, error) {
 	var reconciledReleases []Result
 	for _, crossRelease := range joyctx.Catalog.Releases.Items {
 		for _, release := range crossRelease.Releases {
-			if release != nil {
-				log.Debug().Str("release", release.Name).Str("environment", release.Environment.Name).Msg("processing release")
-
-				chart, err := joy.ChartFromRelease(release, joyctx.Config.Charts, joyctx.Config.DefaultChartRef)
-				if err != nil {
-					log.
-						Error().
-						Err(err).
-						Str("release", release.Name).Str("environment", release.Environment.Name).
-						Msgf("error getting chart for release %s", release.Name)
-					continue
-				}
-
-				release.Spec.Chart.RepoUrl = chart.RepoURL
-				release.Spec.Chart.Name = chart.Name
-				release.Spec.Chart.Version = chart.Version
-
-				values, err := joy.ReleaseValues(release, joyctx.Config.ValueMapping)
-				if err != nil {
-					log.
-						Error().
-						Err(err).
-						Str("release", release.Name).Str("environment", release.Environment.Name).
-						Msgf("error computing values for release %s", release.Name)
-
-					// we don't want to fail the whole process if rendering one release fails, so we'll just skip this one
-					continue
-				}
-
-				renderedValues, err := yaml.Marshal(values)
-				if err != nil {
-					log.
-						Error().
-						Err(err).
-						Str("release", release.Name).Str("environment", release.Environment.Name).
-						Msgf("error marshaling values for release %s", release.Name)
-
-					// we don't want to fail the whole process if rendering one release fails, so we'll just skip this one
-					continue
-				}
-
-				reconciledReleases = append(reconciledReleases, Result{
-					Release:     release,
-					Environment: release.Environment,
-					Project:     release.Project,
-					Values:      string(renderedValues),
-				})
+			if release == nil {
+				continue
 			}
+
+			generator.Logger.
+				Debug().
+				Str("release", release.Name).
+				Str("environment", release.Environment.Name).
+				Msg("processing release")
+
+			chart, err := joy.ChartFromRelease(release, joyctx.Config.Charts, joyctx.Config.DefaultChartRef)
+			if err != nil {
+				generator.Logger.
+					Error().
+					Err(err).
+					Str("release", release.Name).Str("environment", release.Environment.Name).
+					Msgf("error getting chart for release %s", release.Name)
+				continue
+			}
+
+			release.Spec.Chart.RepoUrl = chart.RepoURL
+			release.Spec.Chart.Name = chart.Name
+			release.Spec.Chart.Version = chart.Version
+
+			values, err := joy.ReleaseValues(release, joyctx.Config.ValueMapping)
+			if err != nil {
+				generator.Logger.
+					Error().
+					Err(err).
+					Str("release", release.Name).Str("environment", release.Environment.Name).
+					Msgf("error computing values for release %s", release.Name)
+				continue
+			}
+
+			renderedValues, err := yaml.Marshal(values)
+			if err != nil {
+				generator.Logger.
+					Error().
+					Err(err).
+					Str("release", release.Name).Str("environment", release.Environment.Name).
+					Msgf("error marshaling values for release %s", release.Name)
+				continue
+			}
+
+			reconciledReleases = append(reconciledReleases, Result{
+				Release:     release,
+				Environment: release.Environment,
+				Project:     release.Project,
+				Values:      string(renderedValues),
+			})
 		}
 	}
 

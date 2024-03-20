@@ -147,16 +147,18 @@ func TestGenerator(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {
-			generator := New(func() (*JoyContext, error) {
-				return &JoyContext{
-					Catalog: BuildCatalogFromRelease(tc.Release),
-					Config: &joy.Config{
-						DefaultChartRef: tc.DefaultChartRef,
-						Charts:          tc.Charts,
-						ValueMapping:    tc.ValueMapping,
-					},
-				}, nil
-			})
+			generator := Generator{
+				LoadJoyContext: func() (*JoyContext, error) {
+					return &JoyContext{
+						Catalog: BuildCatalogFromRelease(tc.Release),
+						Config: &joy.Config{
+							DefaultChartRef: tc.DefaultChartRef,
+							Charts:          tc.Charts,
+							ValueMapping:    tc.ValueMapping,
+						},
+					}, nil
+				},
+			}
 
 			results, err := generator.Run()
 			require.NoError(t, err)
