@@ -42,6 +42,8 @@ func run() error {
 		return fmt.Errorf("failed to create repo: %w", err)
 	}
 
+	logger.Info().Str("catalog_path", repo.Metadata.Path).Msg("initialized repo")
+
 	repo = repo.WithLogger(logger)
 
 	server := &http.Server{
@@ -61,6 +63,7 @@ func run() error {
 	errChan := make(chan error, 1)
 
 	go func() {
+		logger.Info().Str("address", server.Addr).Msg("starting server")
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			errChan <- err
 		}
@@ -75,7 +78,7 @@ func run() error {
 	case <-ctx.Done():
 	}
 
-	shutdownContext, cancel := context.WithTimeout(context.Background(), cfg.GracefulShutdown)
+	shutdownContext, cancel := context.WithTimeout(context.Background(), cfg.GracePeriod)
 	defer cancel()
 
 	if err := server.Shutdown(shutdownContext); err != nil {

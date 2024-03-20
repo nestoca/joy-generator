@@ -14,6 +14,10 @@ import (
 	"github.com/nestoca/joy-generator/internal/github"
 )
 
+func init() {
+	gin.SetMode(gin.ReleaseMode)
+}
+
 type HandlerParams struct {
 	pluginToken string
 	logger      zerolog.Logger
@@ -24,48 +28,10 @@ type HandlerParams struct {
 func Handler(params HandlerParams) http.Handler {
 	engine := gin.New()
 
-	engine.Use(func(c *gin.Context) {
-		defer func() {
-			err := recover()
-			if err == nil {
-				return
-			}
-			params.logger.Err(fmt.Errorf("%v", err)).Msg("recovered from panic")
-
-			if c.Writer.Written() {
-				return
-			}
-
-			c.JSON(500, gin.H{"error": err})
-		}()
-	})
-
-	engine.Use(func(c *gin.Context) {
-		start := time.Now()
-
-		recorder := ErrorRecorder{
-			ResponseWriter: c.Writer,
-			buffer:         bytes.Buffer{},
-		}
-
-		c.Writer = &recorder
-
-		c.Next()
-
-		event := func() *zerolog.Event {
-			if err := recorder.buffer.String(); err != "" {
-				return params.logger.Err(errors.New(err))
-			}
-			return params.logger.Info()
-		}()
-
-		event.
-			Str("method", c.Request.Method).
-			Str("path", c.Request.URL.Path).
-			Int("code", c.Writer.Status()).
-			Dur("elapsed", time.Since(start)).
-			Msg("served request")
-	})
+	engine.Use(
+		RecoveryMiddleware(params.logger),
+		ObservabilityMiddleware(params.logger),
+	)
 
 	engine.GET("/api/v1/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "ok"})
@@ -88,7 +54,7 @@ func Handler(params HandlerParams) http.Handler {
 		Generator: params.generator,
 	}
 
-	engine.GET(
+	engine.POST(
 		"/api/v1/getparams.execute",
 		func(c *gin.Context) {
 			if c.GetHeader("Authorization") != "Bearer "+params.pluginToken {
@@ -99,6 +65,57 @@ func Handler(params HandlerParams) http.Handler {
 	)
 
 	return engine.Handler()
+}
+
+func RecoveryMiddleware(logger zerolog.Logger) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		defer func() {
+			err := recover()
+			if err == nil {
+				return
+			}
+			logger.Err(fmt.Errorf("%v", err)).Msg("recovered from panic")
+
+			if c.Writer.Written() {
+				return
+			}
+
+			c.JSON(500, gin.H{"error": err})
+		}()
+		// Important: c.Next() is needed so that defer statement doesn't execute immediately
+		// but only after middleware chain is complete or has panicked.
+		// Great catch by Mr Silphid
+		c.Next()
+	}
+}
+
+func ObservabilityMiddleware(logger zerolog.Logger) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		start := time.Now()
+
+		recorder := ErrorRecorder{
+			ResponseWriter: c.Writer,
+			buffer:         bytes.Buffer{},
+		}
+
+		c.Writer = &recorder
+
+		c.Next()
+
+		event := func() *zerolog.Event {
+			if err := recorder.buffer.String(); err != "" {
+				return logger.Err(errors.New(err))
+			}
+			return logger.Info()
+		}()
+
+		event.
+			Str("method", c.Request.Method).
+			Str("path", c.Request.URL.Path).
+			Int("code", c.Writer.Status()).
+			Str("elapsed", time.Since(start).String()).
+			Msg("served request")
+	}
 }
 
 type ErrorRecorder struct {

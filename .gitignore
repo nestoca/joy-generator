@@ -27,3 +27,7 @@ tmp
 go.work
 
 *.pem
+
+*.env
+
+test_output
