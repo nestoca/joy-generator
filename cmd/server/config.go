@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/davidmdm/conf"
@@ -9,10 +11,8 @@ import (
 )
 
 type Config struct {
-	Port             string
-	GracefulShutdown time.Duration
-
-	Debug bool
+	Port        string
+	GracePeriod time.Duration
 
 	PluginToken string
 
@@ -24,14 +24,14 @@ type Config struct {
 	}
 }
 
-func GetConfig() (cfg Config) {
-	defer conf.Environ.MustParse()
+func GetConfig() Config {
+	var cfg Config
 
 	conf.Var(conf.Environ, &cfg.Port, "PORT", conf.Default(":3000"))
-	conf.Var(conf.Environ, &cfg.Debug, "DEBUG")
+	conf.Var(conf.Environ, &cfg.GracePeriod, "GRACE_PERIOD", conf.Default(10*time.Second))
 	conf.Var(conf.Environ, &cfg.PluginToken, "PLUGIN_TOKEN")
-	conf.Var(conf.Environ, &cfg.Catalog.URL, "CATALOG_REPO_URL")
-	conf.Var(conf.Environ, &cfg.Catalog.Path, "CATALOG_DIR")
+	conf.Var(conf.Environ, &cfg.Catalog.URL, "CATALOG_URL")
+	conf.Var(conf.Environ, &cfg.Catalog.Path, "CATALOG_DIR", conf.Default(filepath.Join(os.TempDir(), "catalog")))
 	conf.Var(conf.Environ, &cfg.Catalog.TargetRevision, "CATALOG_REVISION")
 	conf.Var(conf.Environ, &cfg.Github.User.Token, "GH_TOKEN")
 	conf.Var(conf.Environ, &cfg.Github.User.Name, "GH_USER")
@@ -39,5 +39,7 @@ func GetConfig() (cfg Config) {
 	conf.Var(conf.Environ, &cfg.Github.App.InstallationID, "GH_APP_INSTALLATION_ID")
 	conf.Var(conf.Environ, &cfg.Github.App.PrivateKeyPath, "GH_APP_PRIVATE_KEY_PATH")
 
-	return
+	conf.Environ.MustParse()
+
+	return cfg
 }

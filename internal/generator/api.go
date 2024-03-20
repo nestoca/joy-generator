@@ -29,7 +29,7 @@ type API struct {
 
 func (api API) HandleGetParams(c *gin.Context) {
 	var request GetParamsRequest
-	if err := c.BindJSON(request); err != nil {
+	if err := c.BindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":  "invalid request body",
 			"detail": err.Error(),

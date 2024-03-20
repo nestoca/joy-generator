@@ -13,7 +13,6 @@ import (
 	"github.com/go-git/go-git/v5/plumbing"
 	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 )
 
 type User struct {
@@ -112,7 +111,7 @@ func (r *Repo) init() error {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	log.Debug().Msg("opening git repository")
+	r.logger.Debug().Msg("opening git repository")
 
 	repository, err := git.PlainOpen(r.Metadata.Path)
 	if err != nil {
@@ -129,6 +128,25 @@ func (r *Repo) init() error {
 		})
 		if err != nil {
 			return fmt.Errorf("cloning git repository: %w", err)
+		}
+	}
+
+	if revision := r.Metadata.TargetRevision; revision != "" {
+		hash, err := repository.ResolveRevision(plumbing.Revision("refs/remotes/origin/" + revision))
+		if err != nil {
+			return fmt.Errorf("resolving revision %s: %w", revision, err)
+		}
+
+		worktree, err := repository.Worktree()
+		if err != nil {
+			return fmt.Errorf("getting worktree: %w", err)
+		}
+
+		checkoutOpts := &git.CheckoutOptions{
+			Hash: *hash,
+		}
+		if err := worktree.Checkout(checkoutOpts); err != nil {
+			return fmt.Errorf("checking out: %s: %w", revision, err)
 		}
 	}
 
@@ -150,7 +168,8 @@ func (r *Repo) Pull() error {
 	defer r.mutex.Unlock()
 
 	r.logger.Debug().Msg("load git worktree")
-	w, err := r.repository.Worktree()
+
+	worktree, err := r.repository.Worktree()
 	if err != nil {
 		return fmt.Errorf("loading git worktree: %w", err)
 	}
@@ -162,7 +181,13 @@ func (r *Repo) Pull() error {
 		Force: true,
 	}
 
-	if err := w.Pull(pullOpts); !errors.Is(err, git.NoErrAlreadyUpToDate) && !errors.Is(err, git.ErrNonFastForwardUpdate) {
+	if r.Metadata.TargetRevision != "" {
+		pullOpts.ReferenceName = plumbing.ReferenceName("refs/heads/" + r.Metadata.TargetRevision)
+	}
+
+	if err := worktree.Pull(pullOpts); err == nil || errors.Is(err, git.NoErrAlreadyUpToDate) {
+		return nil
+	} else if !errors.Is(err, git.ErrNonFastForwardUpdate) {
 		return err
 	}
 
@@ -181,7 +206,7 @@ func (r *Repo) Pull() error {
 
 	if localHead.Hash() != *remoteHeadHash {
 		r.logger.Debug().Msg("resetting to previous commit")
-		if err := w.Reset(&git.ResetOptions{Commit: *remoteHeadHash, Mode: git.HardReset}); err != nil {
+		if err := worktree.Reset(&git.ResetOptions{Commit: *remoteHeadHash, Mode: git.HardReset}); err != nil {
 			return fmt.Errorf("resetting to previous commit: %w", err)
 		}
 	}
