@@ -29,7 +29,7 @@ spec:
       volumes:
         - name: catalog-dir
           emptyDir: {}
-        {{- if .Values.applicationConfig.githubApp }}
+        {{- if .Values.env.GH_APP_ID }}
         - name: github-app-private-key
           secret:
             secretName: {{ include "joy-generator.fullname" . }}-github-app-key
@@ -43,19 +43,15 @@ spec:
           volumeMounts:
             - mountPath: /tmp/catalog
               name: catalog-dir
-            {{- if .Values.applicationConfig.githubApp }}
+            {{- if .Values.env.GH_APP_ID }}
             - mountPath: /etc/joy/config
               name: github-app-private-key
             {{- end }}
+          {{- if .Values.env.GH_APP_ID }}
           env:
-            - name: JOY_CATALOG_DIR
-              value: /tmp/catalog
-            - name: GIN_MODE
-              value: release
-            {{- if .Values.applicationConfig.githubApp }}
             - name: JOY_GITHUB_APP_PRIVATE_KEY_PATH
               value: /etc/joy/config/githubApp.pem
-            {{- end }}
+          {{- end }}
           envFrom:
             - secretRef:
                 name: {{ include "joy-generator.fullname" . }}-config

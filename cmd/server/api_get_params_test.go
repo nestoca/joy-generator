@@ -39,7 +39,7 @@ func TestGetParamsE2E(t *testing.T) {
 	require.NoError(t, os.RemoveAll(catalog.Path))
 
 	repo, err := user.NewRepo(catalog)
-	require.NoError(t, err)
+	require.NoError(t, err, "failed to create repo for user: %s", user.Name)
 
 	repo = repo.WithLogger(logger)
 
@@ -56,7 +56,7 @@ func TestGetParamsE2E(t *testing.T) {
 	server := httptest.NewServer(handler)
 	defer server.Close()
 
-	req, err := http.NewRequest("GET", server.URL+"/api/v1/getparams.execute", strings.NewReader("{}"))
+	req, err := http.NewRequest("POST", server.URL+"/api/v1/getparams.execute", strings.NewReader("{}"))
 	require.NoError(t, err)
 
 	req.Header.Set("Authorization", "Bearer test-token")

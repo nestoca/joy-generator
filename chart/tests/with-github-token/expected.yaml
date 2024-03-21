@@ -4,11 +4,17 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: my-release-joy-generator-config
-stringData:  
-  JOY_PLUGIN_TOKEN: "@very!l0ngands3curet0ken"
-  JOY_REPO_URL: "https://github.com/example/foobar.git"
-  JOY_GITHUB_USER: "username"
-  JOY_GITHUB_TOKEN: "12312312312312"
+stringData:
+  CATALOG_DIR: /tmp/catalog
+  CATALOG_REVISION: ""
+  CATALOG_URL: https://github.com/example/foobar.git
+  GH_APP_ID: ""
+  GH_APP_INSTALLATION_ID: ""
+  GH_TOKEN: "12312312312312"
+  GH_USER: username
+  GRACE_PERIOD: 10s
+  PLUGIN_TOKEN: '@very!l0ngands3curet0ken'
+  PORT: :8080
 ---
 # Source: joy-generator/templates/argocd-config.yaml
 apiVersion: v1
@@ -16,7 +22,7 @@ kind: ConfigMap
 metadata:
   name: my-release-joy-generator-config
 data:
-  token: "$my-release-joy-generator-config:JOY_PLUGIN_TOKEN"
+  token: "$my-release-joy-generator-config:PLUGIN_TOKEN"
   baseUrl: "http://my-release-joy-generator"
 ---
 # Source: joy-generator/templates/service.yaml
@@ -78,11 +84,6 @@ spec:
           volumeMounts:
             - mountPath: /tmp/catalog
               name: catalog-dir
-          env:
-            - name: JOY_CATALOG_DIR
-              value: /tmp/catalog
-            - name: GIN_MODE
-              value: release
           envFrom:
             - secretRef:
                 name: my-release-joy-generator-config
