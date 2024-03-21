@@ -1,3 +1,12 @@
+## [0.5.1](https://github.com/nestoca/joy-generator/compare/v0.5.0...v0.5.1) (2024-03-21)
+
+
+### Bug Fixes
+
+* **PL-2554:** fix chart default values ([af253fa](https://github.com/nestoca/joy-generator/commit/af253faf8f27f83d1ec4ed7686b0211c1982a7b0))
+
+
+
 # [0.5.0](https://github.com/nestoca/joy-generator/compare/v0.4.0...v0.5.0) (2024-03-21)
 
 
