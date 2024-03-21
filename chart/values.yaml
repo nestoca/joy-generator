@@ -5,14 +5,15 @@
 env:
   PORT: :8080
   GRACE_PERIOD: 10s
-  PLUGIN_TOKEN: ""
-  CATALOG_URL: ""
   CATALOG_DIR: /tmp/catalog
-  CATALOG_REVISION: ""
-  GH_USER: ""
-  GH_TOKEN: ""
-  GH_APP_ID: ""
-  GH_APP_INSTALLATION_ID: ""
+
+  # PLUGIN_TOKEN: ""
+  # CATALOG_URL: ""
+  # CATALOG_REVISION: ""
+  # GH_USER: ""
+  # GH_TOKEN: ""
+  # GH_APP_ID: ""
+  # GH_APP_INSTALLATION_ID: ""
 
 # Configuration settings for the joy-generator instance
 applicationConfig:

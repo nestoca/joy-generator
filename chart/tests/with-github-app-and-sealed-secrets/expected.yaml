@@ -103,12 +103,9 @@ metadata:
 spec:
   encryptedData:
     CATALOG_DIR: /tmp/catalog
-    CATALOG_REVISION: ""
     CATALOG_URL: https://github.com/example/foobar.git
     GH_APP_ID: "123456"
     GH_APP_INSTALLATION_ID: "789101112"
-    GH_TOKEN: ""
-    GH_USER: ""
     GRACE_PERIOD: 10s
     PLUGIN_TOKEN: '@very!l0ngands3curet0ken'
     PORT: :8080

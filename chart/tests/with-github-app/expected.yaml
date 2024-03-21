@@ -6,12 +6,9 @@ metadata:
   name: my-release-joy-generator-config
 stringData:
   CATALOG_DIR: /tmp/catalog
-  CATALOG_REVISION: ""
   CATALOG_URL: https://github.com/example/foobar.git
   GH_APP_ID: "123"
   GH_APP_INSTALLATION_ID: "666"
-  GH_TOKEN: ""
-  GH_USER: ""
   GRACE_PERIOD: 10s
   PLUGIN_TOKEN: '@very!l0ngands3curet0ken'
   PORT: :8080
