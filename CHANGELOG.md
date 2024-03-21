@@ -1,3 +1,14 @@
+# [0.5.0](https://github.com/nestoca/joy-generator/compare/v0.4.0...v0.5.0) (2024-03-21)
+
+
+### Features
+
+* **PL-2554:** add e2e test ([9eb1906](https://github.com/nestoca/joy-generator/commit/9eb1906ea3fa5634ca360586c89070f8a2cbcf52))
+* **PL-2554:** major refactoring ([a1fd069](https://github.com/nestoca/joy-generator/commit/a1fd069acd699672cd15c0f4773c996bf5c6e572))
+* **PL-2554:** update chart ([a36a8a1](https://github.com/nestoca/joy-generator/commit/a36a8a1935ce86db98bc53b1b8df0406747dfa08))
+
+
+
 # [0.4.0](https://github.com/nestoca/joy-generator/compare/v0.3.1...v0.4.0) (2024-03-19)
 
 
