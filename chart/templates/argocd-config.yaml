@@ -3,5 +3,5 @@ kind: ConfigMap
 metadata:
   name: {{ include "joy-generator.fullname" . }}-config
 data:
-  token: "${{ include "joy-generator.fullname" . }}-config:JOY_PLUGIN_TOKEN"
+  token: "${{ include "joy-generator.fullname" . }}-config:PLUGIN_TOKEN"
   baseUrl: "http://{{ include "joy-generator.fullname" . }}"

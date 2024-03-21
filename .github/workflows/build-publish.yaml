@@ -22,6 +22,7 @@ jobs:
         with:
           work-dir: chart
           args: --namespace my-namespace --release my-release --app-version 1.0.0 --chart-version 1.0.0
+
   test-app:
     runs-on: ubuntu-latest
     steps:
@@ -35,6 +36,10 @@ jobs:
       - name: Setup dependencies
         run: go mod download
       - name: Run tests
+        env:
+          GH_USER: nestobot
+          GH_TOKEN: ${{ secrets.TESTING_TOKEN }}
+          CATALOG_URL: https://github.com/nestoca/catalog
         run: go test ./...
   build:
     runs-on: ubuntu-latest
@@ -104,7 +109,7 @@ jobs:
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
         run: |
           yq -i '.appVersion = "${{ steps.changelog.outputs.version }}"' 'chart/Chart.yaml'
-          yq -i '.version = "${{ steps.changelog.outputs.version }}"' 'chart/Chart.yaml'         
+          yq -i '.version = "${{ steps.changelog.outputs.version }}"' 'chart/Chart.yaml'
 
       - name: Commit release
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
@@ -141,20 +146,20 @@ jobs:
         run: |
           ORG_NAME=${GITHUB_REPOSITORY%%/*}
           REPO_NAME=${GITHUB_REPOSITORY#*/}
-          
+
           CHART_NAME=$(yq .name ${{ github.workspace }}/chart/Chart.yaml)
-          
+
           mkdir -p ${{ runner.temp }}/helm-release
-          
+
           cd ${{ runner.temp }}/helm-release
-          
+
           # Try to get the current index.yaml of the helm repo from https://${ORG_NAME}.github.io/${REPO_NAME}/index.yaml
           # If it fails, create a new index.yaml
           curl -f -L https://${ORG_NAME}.github.io/${REPO_NAME}/index.yaml -o index.yaml || echo -e "apiVersion: v1\nentries: {}" > index.yaml
-          
+
           helm package ${{ github.workspace }}/chart
           helm repo index --url https://github.com/${{ github.repository }}/releases/download/${{ steps.changelog.outputs.tag }} --merge index.yaml .
-          
+
           echo "artifact-path=${{ runner.temp }}/helm-release/${CHART_NAME}-${{ steps.changelog.outputs.version }}.tgz" >> $GITHUB_OUTPUT
 
       - name: Upload pages artifact

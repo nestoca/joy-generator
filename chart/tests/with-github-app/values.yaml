@@ -1,18 +1,19 @@
 # Configuration settings for the joy-generator instance
-applicationConfig:
-  pluginToken: "@very!l0ngands3curet0ken"
+env:
+  PLUGIN_TOKEN: "@very!l0ngands3curet0ken"
+
+  GH_APP_ID: "123"
+  GH_APP_INSTALLATION_ID: "666"
+
   # The HTTPS Git URL of your joy catalog
-  repoUrl: "https://github.com/example/foobar.git"
-  # The GitHub app configuration.
-  # Required if githubToken is not set.
-  githubApp:
-    # The GitHub application ID
-    appId: 123456
-    # The GitHub application installation ID
-    installationId: 789101112
-    # The GitHub application private key (PEM format)
-    privateKey: |
-      FOOBARLOREMISPUM
+  CATALOG_URL: "https://github.com/example/foobar.git"
+
+# The GitHub app configuration.
+# Required if githubToken is not set.
+githubApp:
+  # The GitHub application private key (PEM format)
+  privateKey: |
+    FOOBARLOREMISPUM
 
 image:
   tag: 0.1.2

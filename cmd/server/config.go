@@ -27,7 +27,7 @@ type Config struct {
 func GetConfig() Config {
 	var cfg Config
 
-	conf.Var(conf.Environ, &cfg.Port, "PORT", conf.Default(":3000"))
+	conf.Var(conf.Environ, &cfg.Port, "PORT", conf.Default(":8080"))
 	conf.Var(conf.Environ, &cfg.GracePeriod, "GRACE_PERIOD", conf.Default(10*time.Second))
 	conf.Var(conf.Environ, &cfg.PluginToken, "PLUGIN_TOKEN")
 	conf.Var(conf.Environ, &cfg.Catalog.URL, "CATALOG_URL")
