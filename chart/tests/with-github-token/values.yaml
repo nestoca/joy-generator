@@ -3,10 +3,13 @@
 # Declare variables to be passed into your templates.
 
 env:
-  PLUGIN_TOKEN: "@very!l0ngands3curet0ken"
   CATALOG_URL: https://github.com/example/foobar.git
   GH_USER: username
-  GH_TOKEN: "12312312312312"
+
+secretEnv:
+  values:
+    PLUGIN_TOKEN: "@very!l0ngands3curet0ken"
+    GH_TOKEN: "12312312312312"
 
 image:
   tag: 0.1.2

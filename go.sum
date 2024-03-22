@@ -41,8 +41,8 @@ github.com/cyphar/filepath-securejoin v0.2.4/go.mod h1:aPGpWjXOXUn2NCNjFvBE6aRxG
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/davidmdm/conf v0.0.4 h1:RluYzOw+d/H112lY2OCHWPIQemtOGhidLk0wi3QWqms=
-github.com/davidmdm/conf v0.0.4/go.mod h1:xcNNsALh9qR2toeuYnXfyMuOPMVuEAfWN0Nb4lqugzw=
+github.com/davidmdm/conf v0.0.7 h1:5VbSi6nStd7X04FuA9ArD00FRTtcPMhvb6BzKbAWoSM=
+github.com/davidmdm/conf v0.0.7/go.mod h1:xcNNsALh9qR2toeuYnXfyMuOPMVuEAfWN0Nb4lqugzw=
 github.com/davidmdm/x/xcontext v0.0.2 h1:8US+zdRCPmnWeSa/28U+dvbhdkBd8mI6XhP7meIZCdk=
 github.com/davidmdm/x/xcontext v0.0.2/go.mod h1:lfAacRD741WjdRwwuTrCaKtvEgPsGMSlmfwgib2SpVA=
 github.com/davidmdm/x/xerr v0.0.3 h1:WwHvo6qzR+eRmHq69Ftgb7PL9832iwy313XpQyJRGtM=

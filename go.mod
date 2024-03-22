@@ -4,7 +4,7 @@ go 1.22.0
 
 require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.9.0
-	github.com/davidmdm/conf v0.0.4
+	github.com/davidmdm/conf v0.0.7
 	github.com/davidmdm/x/xcontext v0.0.2
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-git/go-git/v5 v5.11.0

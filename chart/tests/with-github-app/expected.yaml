@@ -5,13 +5,7 @@ kind: Secret
 metadata:
   name: my-release-joy-generator-config
 stringData:
-  CATALOG_DIR: /tmp/catalog
-  CATALOG_URL: https://github.com/example/foobar.git
-  GH_APP_ID: "123"
-  GH_APP_INSTALLATION_ID: "666"
-  GRACE_PERIOD: 10s
   PLUGIN_TOKEN: '@very!l0ngands3curet0ken'
-  PORT: :8080
 ---
 # Source: joy-generator/templates/secret.yaml
 apiVersion: v1
@@ -96,6 +90,18 @@ spec:
             - mountPath: /etc/joy/config
               name: github-app-private-key
           env:
+            - name: CATALOG_DIR
+              value: "/tmp/catalog"
+            - name: CATALOG_URL
+              value: "https://github.com/example/foobar.git"
+            - name: GH_APP_ID
+              value: "123"
+            - name: GH_APP_INSTALLATION_ID
+              value: "666"
+            - name: GRACE_PERIOD
+              value: "10s"
+            - name: PORT
+              value: ":8080"
             - name: JOY_GITHUB_APP_PRIVATE_KEY_PATH
               value: /etc/joy/config/githubApp.pem
           envFrom:
