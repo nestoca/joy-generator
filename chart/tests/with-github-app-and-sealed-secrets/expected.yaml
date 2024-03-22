@@ -73,6 +73,18 @@ spec:
             - mountPath: /etc/joy/config
               name: github-app-private-key
           env:
+            - name: CATALOG_DIR
+              value: "/tmp/catalog"
+            - name: CATALOG_URL
+              value: "https://github.com/example/foobar.git"
+            - name: GH_APP_ID
+              value: "123456"
+            - name: GH_APP_INSTALLATION_ID
+              value: "789101112"
+            - name: GRACE_PERIOD
+              value: "10s"
+            - name: PORT
+              value: ":8080"
             - name: JOY_GITHUB_APP_PRIVATE_KEY_PATH
               value: /etc/joy/config/githubApp.pem
           envFrom:
@@ -102,13 +114,7 @@ metadata:
     sealedsecrets.bitnami.com/cluster-wide: "true"
 spec:
   encryptedData:
-    CATALOG_DIR: /tmp/catalog
-    CATALOG_URL: https://github.com/example/foobar.git
-    GH_APP_ID: "123456"
-    GH_APP_INSTALLATION_ID: "789101112"
-    GRACE_PERIOD: 10s
     PLUGIN_TOKEN: '@very!l0ngands3curet0ken'
-    PORT: :8080
 ---
 # Source: joy-generator/templates/secret.yaml
 apiVersion: bitnami.com/v1alpha1

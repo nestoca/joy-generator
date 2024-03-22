@@ -5,13 +5,8 @@ kind: Secret
 metadata:
   name: my-release-joy-generator-config
 stringData:
-  CATALOG_DIR: /tmp/catalog
-  CATALOG_URL: https://github.com/example/foobar.git
   GH_TOKEN: "12312312312312"
-  GH_USER: username
-  GRACE_PERIOD: 10s
   PLUGIN_TOKEN: '@very!l0ngands3curet0ken'
-  PORT: :8080
 ---
 # Source: joy-generator/templates/argocd-config.yaml
 apiVersion: v1
@@ -81,6 +76,17 @@ spec:
           volumeMounts:
             - mountPath: /tmp/catalog
               name: catalog-dir
+          env:
+            - name: CATALOG_DIR
+              value: "/tmp/catalog"
+            - name: CATALOG_URL
+              value: "https://github.com/example/foobar.git"
+            - name: GH_USER
+              value: "username"
+            - name: GRACE_PERIOD
+              value: "10s"
+            - name: PORT
+              value: ":8080"
           envFrom:
             - secretRef:
                 name: my-release-joy-generator-config

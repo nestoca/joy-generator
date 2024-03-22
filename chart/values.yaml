@@ -5,44 +5,22 @@
 env:
   PORT: :8080
   GRACE_PERIOD: 10s
-  CATALOG_DIR: /tmp/catalog
 
-  # PLUGIN_TOKEN: ""
+  CATALOG_DIR: /tmp/catalog
   # CATALOG_URL: ""
   # CATALOG_REVISION: ""
   # GH_USER: ""
-  # GH_TOKEN: ""
   # GH_APP_ID: ""
   # GH_APP_INSTALLATION_ID: ""
 
-# Configuration settings for the joy-generator instance
-applicationConfig:
-  # The shared token that ArgoCD will use to call the joy-generator plugin API
-  # This should be some long and secure random string
-  pluginToken: ""
-  # The HTTPS Git URL of your joy catalog
-  repoUrl: ""
+secretEnv:
+  type: secret
+  values:
+    # PLUGIN_TOKEN: ""
+    # GH_TOKEN: ""
 
-  # joy-generator supports authenticating with GitHub using either a personal access token or a GitHub App
-  # Provide either the githubUser or githubApp section, but not both
+githubAppPrivateKey: ""
 
-#  githubUser:
-#    # The GitHub username to use for the joy-generator instance
-#    username: ""
-#    # The GitHub personal access token to use for the joy-generator instance
-#    token: ""
-
-#  githubApp:
-#    # The GitHub application ID
-#    appId: ""
-#    # The GitHub application installation ID
-#    installationId: ""
-#    # The GitHub application private key (PEM format)
-#    privateKey: ""
-
-# The secret type to use for applicationConfig values.
-# Can be either 'secret' or 'sealedSecret'.
-secretType: "secret"
 # Additional annotations for sealed secrets
 sealedSecretAnnotations: {}
 

@@ -47,8 +47,14 @@ spec:
             - mountPath: /etc/joy/config
               name: github-app-private-key
             {{- end }}
-          {{- if .Values.env.GH_APP_ID }}
           env:
+          {{- range $key, $value := .Values.env }}
+          {{- if $value }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+          {{- end -}}
+          {{- end }}
+          {{- if .Values.env.GH_APP_ID }}
             - name: JOY_GITHUB_APP_PRIVATE_KEY_PATH
               value: /etc/joy/config/githubApp.pem
           {{- end }}

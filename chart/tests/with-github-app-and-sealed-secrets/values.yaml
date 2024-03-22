@@ -1,14 +1,15 @@
 env:
   CATALOG_URL: https://github.com/example/foobar.git
-  PLUGIN_TOKEN: "@very!l0ngands3curet0ken"
   GH_APP_ID: "123456"
   GH_APP_INSTALLATION_ID: "789101112"
 
-githubApp:
-  privateKey: |
-    FOOBARLOREMISPUM
+secretEnv:
+  type: sealedSecret
+  values:
+    PLUGIN_TOKEN: "@very!l0ngands3curet0ken"
 
-secretType: "sealedSecret"
+githubAppPrivateKey: |
+  FOOBARLOREMISPUM
 
 sealedSecretAnnotations:
   sealedsecrets.bitnami.com/cluster-wide: "true"
