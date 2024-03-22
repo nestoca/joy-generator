@@ -55,7 +55,7 @@ spec:
           {{- end -}}
           {{- end }}
           {{- if .Values.env.GH_APP_ID }}
-            - name: JOY_GITHUB_APP_PRIVATE_KEY_PATH
+            - name: GH_APP_PRIVATE_KEY_PATH
               value: /etc/joy/config/githubApp.pem
           {{- end }}
           envFrom:

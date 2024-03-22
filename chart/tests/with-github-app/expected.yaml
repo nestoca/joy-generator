@@ -102,7 +102,7 @@ spec:
               value: "10s"
             - name: PORT
               value: ":8080"
-            - name: JOY_GITHUB_APP_PRIVATE_KEY_PATH
+            - name: GH_APP_PRIVATE_KEY_PATH
               value: /etc/joy/config/githubApp.pem
           envFrom:
             - secretRef:
