@@ -1,3 +1,12 @@
+## [0.5.2](https://github.com/nestoca/joy-generator/compare/v0.5.1...v0.5.2) (2024-03-22)
+
+
+### Bug Fixes
+
+* **PL-2554:** separate secrets from envvars in chart ([bc68e58](https://github.com/nestoca/joy-generator/commit/bc68e58ab044c6ccc2dc38a2350c072882a2f650))
+
+
+
 ## [0.5.1](https://github.com/nestoca/joy-generator/compare/v0.5.0...v0.5.1) (2024-03-21)
 
 
