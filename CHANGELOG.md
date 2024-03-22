@@ -1,3 +1,12 @@
+## [0.5.3](https://github.com/nestoca/joy-generator/compare/v0.5.2...v0.5.3) (2024-03-22)
+
+
+### Bug Fixes
+
+* **PL-2554:** fix key path variable name ([bf45bd9](https://github.com/nestoca/joy-generator/commit/bf45bd9739c69177c5826cb6ba9e09615d72b48b))
+
+
+
 ## [0.5.2](https://github.com/nestoca/joy-generator/compare/v0.5.1...v0.5.2) (2024-03-22)
 
 
