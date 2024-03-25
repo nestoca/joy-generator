@@ -1,11 +1,11 @@
 package github
 
 import (
+	"cmp"
 	"context"
 	"errors"
 	"fmt"
 	"net/http"
-	"strings"
 	"sync"
 
 	"github.com/bradleyfalzon/ghinstallation/v2"
@@ -131,23 +131,20 @@ func (r *Repo) init() error {
 		}
 	}
 
-	if revision := r.Metadata.TargetRevision; revision != "" {
-		hash, err := repository.ResolveRevision(plumbing.Revision("refs/remotes/origin/" + revision))
-		if err != nil {
-			return fmt.Errorf("resolving revision %s: %w", revision, err)
-		}
+	revision := cmp.Or(r.Metadata.TargetRevision, "master")
 
-		worktree, err := repository.Worktree()
-		if err != nil {
-			return fmt.Errorf("getting worktree: %w", err)
-		}
+	hash, err := repository.ResolveRevision(plumbing.Revision("refs/remotes/origin/" + revision))
+	if err != nil {
+		return fmt.Errorf("resolving revision %s: %w", revision, err)
+	}
 
-		checkoutOpts := &git.CheckoutOptions{
-			Hash: *hash,
-		}
-		if err := worktree.Checkout(checkoutOpts); err != nil {
-			return fmt.Errorf("checking out: %s: %w", revision, err)
-		}
+	worktree, err := repository.Worktree()
+	if err != nil {
+		return fmt.Errorf("getting worktree: %w", err)
+	}
+
+	if err := worktree.Checkout(&git.CheckoutOptions{Hash: *hash}); err != nil {
+		return fmt.Errorf("checking out: %s: %w", revision, err)
 	}
 
 	r.repository = repository
@@ -191,24 +188,27 @@ func (r *Repo) Pull() error {
 		return err
 	}
 
-	// If non-fast-forward update, manually reset the branch to the remote HEAD
-	localHead, err := r.repository.Head()
-	if err != nil {
-		return fmt.Errorf("getting local HEAD: %w", err)
+	revision := cmp.Or(r.Metadata.TargetRevision, "master")
+
+	fetchOpts := &git.FetchOptions{
+		Auth:  auth,
+		Force: true,
+	}
+	if err := r.repository.Fetch(fetchOpts); err != nil && !errors.Is(err, git.NoErrAlreadyUpToDate) {
+		return fmt.Errorf("fetching from remote: %w", err)
 	}
 
-	remoteRefName := fmt.Sprintf("refs/remotes/origin/%s", strings.Split(localHead.Name().String(), "/")[2])
-
-	remoteHeadHash, err := r.repository.ResolveRevision(plumbing.Revision(remoteRefName))
+	hash, err := r.repository.ResolveRevision(plumbing.Revision("refs/remotes/origin/" + revision))
 	if err != nil {
-		return fmt.Errorf("resolving remote HEAD: %w", err)
+		return fmt.Errorf("resolving revision %s: %w", revision, err)
 	}
 
-	if localHead.Hash() != *remoteHeadHash {
-		r.logger.Debug().Msg("resetting to previous commit")
-		if err := worktree.Reset(&git.ResetOptions{Commit: *remoteHeadHash, Mode: git.HardReset}); err != nil {
-			return fmt.Errorf("resetting to previous commit: %w", err)
-		}
+	resetOpts := &git.ResetOptions{
+		Commit: *hash,
+		Mode:   git.HardReset,
+	}
+	if err := worktree.Reset(resetOpts); err != nil {
+		return fmt.Errorf("resetting branch: %s: %w", revision, err)
 	}
 
 	return nil
