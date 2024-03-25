@@ -1,3 +1,13 @@
+## [0.5.4](https://github.com/nestoca/joy-generator/compare/v0.5.3...v0.5.4) (2024-03-25)
+
+
+### Bug Fixes
+
+* **PL-2554:** fix temp test issue ([22d14ac](https://github.com/nestoca/joy-generator/commit/22d14ac3c35197b19f34819507dcbfd76eab18f0))
+* **PL-2554:** update joy version ([c6728e5](https://github.com/nestoca/joy-generator/commit/c6728e56818662df32572233025490ee2e3f6881))
+
+
+
 ## [0.5.3](https://github.com/nestoca/joy-generator/compare/v0.5.2...v0.5.3) (2024-03-22)
 
 
