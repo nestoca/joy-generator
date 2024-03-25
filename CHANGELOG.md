@@ -1,3 +1,12 @@
+## [0.5.5](https://github.com/nestoca/joy-generator/compare/v0.5.4...v0.5.5) (2024-03-25)
+
+
+### Bug Fixes
+
+* **PL-2554:** capture stack trace for recovery panics ([680db09](https://github.com/nestoca/joy-generator/commit/680db0910a29bcf1f93ce206b96aed0e584a146a))
+
+
+
 ## [0.5.4](https://github.com/nestoca/joy-generator/compare/v0.5.3...v0.5.4) (2024-03-25)
 
 
