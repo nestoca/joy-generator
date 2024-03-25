@@ -1,3 +1,12 @@
+## [0.5.6](https://github.com/nestoca/joy-generator/compare/v0.5.5...v0.5.6) (2024-03-25)
+
+
+### Bug Fixes
+
+* **PL-2554:** fix git reset logic ([4323625](https://github.com/nestoca/joy-generator/commit/4323625c0e8469288a4bc63d79e27f8b2d601683))
+
+
+
 ## [0.5.5](https://github.com/nestoca/joy-generator/compare/v0.5.4...v0.5.5) (2024-03-25)
 
 
