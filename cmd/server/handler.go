@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"runtime/debug"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -70,17 +71,22 @@ func Handler(params HandlerParams) http.Handler {
 func RecoveryMiddleware(logger zerolog.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
-			err := recover()
-			if err == nil {
+			recovered := recover()
+			if recovered == nil {
 				return
 			}
-			logger.Err(fmt.Errorf("%v", err)).Msg("recovered from panic")
+
+			err := fmt.Errorf("%v", recovered)
+
+			logger.Err(err).
+				Str("stacktrace", string(debug.Stack())).
+				Msg("recovered from panic")
 
 			if c.Writer.Written() {
 				return
 			}
 
-			c.JSON(500, gin.H{"error": err})
+			c.JSON(500, gin.H{"error": err.Error()})
 		}()
 		// Important: c.Next() is needed so that defer statement doesn't execute immediately
 		// but only after middleware chain is complete or has panicked.
