@@ -8,7 +8,7 @@ require (
 	github.com/davidmdm/x/xcontext v0.0.2
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-git/go-git/v5 v5.11.0
-	github.com/nestoca/joy v0.42.0
+	github.com/nestoca/joy v0.42.5
 	github.com/rs/zerolog v1.32.0
 	github.com/stretchr/testify v1.9.0
 	gopkg.in/yaml.v3 v3.0.1
