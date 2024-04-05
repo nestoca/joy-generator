@@ -1,3 +1,12 @@
+## [0.5.7](https://github.com/nestoca/joy-generator/compare/v0.5.6...v0.5.7) (2024-04-05)
+
+
+### Bug Fixes
+
+* **PL-2579:** renovate pr for joy only ([#20](https://github.com/nestoca/joy-generator/issues/20)) ([61c9d18](https://github.com/nestoca/joy-generator/commit/61c9d18626159be34998de0c22543c54662cdd75))
+
+
+
 ## [0.5.6](https://github.com/nestoca/joy-generator/compare/v0.5.5...v0.5.6) (2024-03-25)
 
 
