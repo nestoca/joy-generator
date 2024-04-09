@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"cmp"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,9 +9,11 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 
+	"github.com/davidmdm/conf"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 
@@ -21,25 +22,30 @@ import (
 )
 
 func TestGetParamsE2E(t *testing.T) {
-	logs := &TestLogOutputs{}
-
-	logger := zerolog.New(logs)
-
-	user := github.User{
-		Name:  os.Getenv("GH_USER"),
-		Token: os.Getenv("GH_TOKEN"),
+	if ok, _ := strconv.ParseBool(os.Getenv("INTERNAL_TESTING")); !ok {
+		t.Skip("skip internal test")
 	}
 
-	catalog := github.RepoMetadata{
-		Path:           cmp.Or(os.Getenv("CATALOG_PATH"), filepath.Join(os.TempDir(), "catalog-test")),
-		URL:            os.Getenv("CATALOG_URL"),
-		TargetRevision: os.Getenv("CATALOG_REVISION"),
-	}
+	var (
+		user    github.User
+		catalog github.RepoMetadata
+	)
+
+	conf.Var(conf.Environ, &catalog.Path, "CATALOG_PATH", conf.Default(filepath.Join(os.TempDir(), "catalog")))
+	conf.Var(conf.Environ, &catalog.URL, "CATALOG_URL", conf.Required[string](true))
+	conf.Var(conf.Environ, &catalog.TargetRevision, "CATALOG_REVISION", conf.Default("master"))
+	conf.Var(conf.Environ, &user.Name, "GH_USER", conf.Required[string](true))
+	conf.Var(conf.Environ, &user.Token, "GH_TOKEN", conf.Required[string](true))
+
+	require.NoError(t, conf.Environ.Parse())
 
 	require.NoError(t, os.RemoveAll(catalog.Path))
 
 	repo, err := user.NewRepo(catalog)
 	require.NoError(t, err, "failed to create repo for user: %s", user.Name)
+
+	logs := &TestLogOutputs{}
+	logger := zerolog.New(logs)
 
 	repo = repo.WithLogger(logger)
 
@@ -76,13 +82,12 @@ func TestGetParamsE2E(t *testing.T) {
 
 	require.Greater(t, len(response.Output.Parameters), 0)
 
-	// TODO UNCOMMENT ONCE WE GET PASSED THIS CATALOG BUMP
-	// for _, result := range response.Output.Parameters {
-	// 	chart := jsonUnmarshalTo[map[string]string](t, result.Release.Spec.Chart)
-	// 	require.NotEmpty(t, chart["version"])
-	// 	require.NotEmpty(t, chart["repoUrl"])
-	// 	require.NotEmpty(t, chart["name"])
-	// }
+	for _, result := range response.Output.Parameters {
+		chart := jsonUnmarshalTo[map[string]string](t, result.Release.Spec.Chart)
+		require.NotEmpty(t, chart["version"])
+		require.NotEmpty(t, chart["repoUrl"])
+		require.NotEmpty(t, chart["name"])
+	}
 
 	require.Greater(t, len(logs.Records), 0)
 	for _, record := range logs.Records {
