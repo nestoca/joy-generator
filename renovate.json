@@ -1,6 +1,9 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:base"],
+  "patch": {
+    "enabled": false
+  },
   "packageRules": [
     {
       "matchPackagePatterns": ["*"],
@@ -9,7 +12,8 @@
     },
     {
       "matchPackagePatterns": ["^github\\.com/nestoca/joy$"],
-      "matchUpdateTypes": ["major", "minor"]
+      "matchUpdateTypes": ["major", "minor"],
+      "enabled": true
     }
   ]
 }
