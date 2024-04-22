@@ -1,3 +1,12 @@
+## [0.5.9](https://github.com/nestoca/joy-generator/compare/v0.5.8...v0.5.9) (2024-04-22)
+
+
+### Bug Fixes
+
+* **PL-2654:** stop logging context canceled on shutdown to stderr ([219295c](https://github.com/nestoca/joy-generator/commit/219295c3b513da4422357462fbabd3fef7b91a80))
+
+
+
 ## [0.5.8](https://github.com/nestoca/joy-generator/compare/v0.5.7...v0.5.8) (2024-04-10)
 
 
