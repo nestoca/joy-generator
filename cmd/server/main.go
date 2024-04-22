@@ -85,5 +85,7 @@ func run() error {
 		return fmt.Errorf("failed to shutdown server gracefully: %w", err)
 	}
 
-	return ctx.Err()
+	logger.Info().Str("cause", context.Cause(ctx).Error()).Msg("server shutdown gracefully")
+
+	return nil
 }
