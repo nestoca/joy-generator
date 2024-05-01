@@ -152,9 +152,11 @@ func TestGenerator(t *testing.T) {
 					return &JoyContext{
 						Catalog: BuildCatalogFromRelease(tc.Release),
 						Config: &joy.Config{
-							DefaultChartRef: tc.DefaultChartRef,
-							Charts:          tc.Charts,
-							ValueMapping:    tc.ValueMapping,
+							Catalog: joy.CatalogConfig{
+								DefaultChartRef: tc.DefaultChartRef,
+								Charts:          tc.Charts,
+								ValueMapping:    tc.ValueMapping,
+							},
 						},
 					}, nil
 				},
