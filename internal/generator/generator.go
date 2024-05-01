@@ -45,7 +45,7 @@ func RepoLoader(repo *github.Repo) JoyLoaderFunc {
 			return nil, fmt.Errorf("pulling git repo: %w", err)
 		}
 
-		cfg, err := joy.LoadCatalogConfig(repo.Directory())
+		cfg, err := joy.LoadConfigFromCatalog(repo.Directory())
 		if err != nil {
 			return nil, fmt.Errorf("loading catalog config: %w", err)
 		}
