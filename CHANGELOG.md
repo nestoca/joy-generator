@@ -1,3 +1,12 @@
+## [0.5.12](https://github.com/nestoca/joy-generator/compare/v0.5.11...v0.5.12) (2024-05-10)
+
+
+### Bug Fixes
+
+* add datadog service label value to chart ([fe50929](https://github.com/nestoca/joy-generator/commit/fe5092973a2c5f38b965c8cebc513bd1f14a8641))
+
+
+
 ## [0.5.11](https://github.com/nestoca/joy-generator/compare/v0.5.10...v0.5.11) (2024-05-07)
 
 
