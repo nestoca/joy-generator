@@ -1,0 +1,23 @@
+# Configuration settings for the joy-generator instance
+env:
+  GH_APP_ID: "123"
+  GH_APP_INSTALLATION_ID: "666"
+
+  # The HTTPS Git URL of your joy catalog
+  CATALOG_URL: "https://github.com/example/foobar.git"
+
+secretEnv:
+  values:
+    PLUGIN_TOKEN: "@very!l0ngands3curet0ken"
+
+# The GitHub app configuration.
+# Required if githubToken is not set.
+# The GitHub application private key (PEM format)
+githubAppPrivateKey: |
+  FOOBARLOREMISPUM
+
+image:
+  tag: 0.1.2
+
+podLabels:
+  service-name: joy-generator-chart-test
