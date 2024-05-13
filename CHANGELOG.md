@@ -1,3 +1,12 @@
+## [0.6.3](https://github.com/nestoca/joy-generator/compare/v0.6.2...v0.6.3) (2024-05-13)
+
+
+### Bug Fixes
+
+* **PL-2701:** fix credential read operation ([8931ab2](https://github.com/nestoca/joy-generator/commit/8931ab2459a8eef431a387acff78052c9ae34b24))
+
+
+
 ## [0.6.2](https://github.com/nestoca/joy-generator/compare/v0.6.1...v0.6.2) (2024-05-13)
 
 
