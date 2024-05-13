@@ -1,3 +1,12 @@
+## [0.6.2](https://github.com/nestoca/joy-generator/compare/v0.6.1...v0.6.2) (2024-05-13)
+
+
+### Bug Fixes
+
+* **PL-2701:** log helm authentication success event ([e559d23](https://github.com/nestoca/joy-generator/commit/e559d238a4a44d803117cabde3eeb6d0a5e07834))
+
+
+
 ## [0.6.1](https://github.com/nestoca/joy-generator/compare/v0.6.0...v0.6.1) (2024-05-13)
 
 
