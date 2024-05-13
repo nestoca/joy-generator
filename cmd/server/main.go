@@ -41,6 +41,10 @@ func run() error {
 		if err := AuthenticateHelm(ctx, cfg.Google.Repository, cfg.Google.RawCredentials); err != nil {
 			return fmt.Errorf("failed to authenticate to helm: %w", err)
 		}
+		logger.Info().
+			Str("registry", cfg.Google.Repository).
+			Int("credentials_length", len(cfg.Google.RawCredentials)).
+			Msg("successfully authenticated to helm")
 	}
 
 	repo, err := func() (*github.Repo, error) {
