@@ -61,10 +61,11 @@ func GetConfig() Config {
 	conf.Environ.MustParse()
 
 	if path := cfg.Google.CredentialsFilePath; path != "" {
-		fs := conf.MakeParser(conf.FileSystem(conf.FileSystemOptions{}))
-		defer fs.MustParse()
-
-		conf.Var(fs, &cfg.Google.RawCredentials, path, conf.Required[[]byte](true))
+		creds, err := os.ReadFile(cfg.Google.CredentialsFilePath)
+		if err != nil {
+			panic(err)
+		}
+		cfg.Google.RawCredentials = creds
 	}
 
 	return cfg
