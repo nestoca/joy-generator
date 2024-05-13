@@ -1,3 +1,12 @@
+## [0.6.1](https://github.com/nestoca/joy-generator/compare/v0.6.0...v0.6.1) (2024-05-13)
+
+
+### Bug Fixes
+
+* **PL-2701:** give user permission to home for storing helm cache ([31917ec](https://github.com/nestoca/joy-generator/commit/31917ec85be1864fc9826805068711c1b22ca64f))
+
+
+
 # [0.6.0](https://github.com/nestoca/joy-generator/compare/v0.5.12...v0.6.0) (2024-05-13)
 
 
