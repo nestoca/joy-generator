@@ -33,6 +33,8 @@ COPY --from=build --chown=golang:root /app/joy-generator /app/
 
 RUN apk add helm
 
+RUN mkdir -p /home/golang && chown -R golang:root /home/golang
+
 USER golang:root
 EXPOSE 8080
 
