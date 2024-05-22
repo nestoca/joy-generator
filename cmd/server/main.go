@@ -1,13 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
 	"net/http"
 	"os"
-	"os/exec"
 	"reflect"
 	"syscall"
 	"time"
@@ -34,19 +32,6 @@ func run() error {
 
 	cfg := GetConfig()
 
-	ctx, stop := xcontext.WithSignalCancelation(context.Background(), syscall.SIGINT, syscall.SIGTERM)
-	defer stop()
-
-	if cfg.Google.Repository != "" {
-		if err := AuthenticateHelm(ctx, cfg.Google.Repository, cfg.Google.RawCredentials); err != nil {
-			return fmt.Errorf("failed to authenticate to helm: %w", err)
-		}
-		logger.Info().
-			Str("registry", cfg.Google.Repository).
-			Int("credentials_length", len(cfg.Google.RawCredentials)).
-			Msg("successfully authenticated to helm")
-	}
-
 	repo, err := func() (*github.Repo, error) {
 		if !reflect.ValueOf(cfg.Github.App).IsZero() {
 			return cfg.Github.App.NewRepo(cfg.Catalog)
@@ -68,10 +53,8 @@ func run() error {
 			logger:      logger,
 			repo:        repo,
 			generator: &generator.Generator{
-				CacheRoot:      cfg.CacheRoot,
-				LoadJoyContext: generator.RepoLoader(repo),
 				Logger:         logger,
-				ChartPuller:    generator.ChartPuller{Logger: logger},
+				LoadJoyContext: generator.RepoLoader(repo),
 			},
 		}),
 		ReadHeaderTimeout: 5 * time.Second,
@@ -85,6 +68,9 @@ func run() error {
 			errChan <- err
 		}
 	}()
+
+	ctx, stop := xcontext.WithSignalCancelation(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 
 	select {
 	case err := <-errChan:
@@ -100,21 +86,6 @@ func run() error {
 	}
 
 	logger.Info().Str("cause", context.Cause(ctx).Error()).Msg("server shutdown gracefully")
-
-	return nil
-}
-
-func AuthenticateHelm(ctx context.Context, registry string, credentials []byte) error {
-	login := exec.CommandContext(ctx, "helm", "registry", "login", "-u", "_json_key", "--password-stdin", registry)
-
-	var buffer bytes.Buffer
-	login.Stdout = &buffer
-	login.Stderr = &buffer
-	login.Stdin = bytes.NewReader(credentials)
-
-	if err := login.Run(); err != nil {
-		return fmt.Errorf("%w: %q", err, &buffer)
-	}
 
 	return nil
 }
