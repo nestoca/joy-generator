@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -28,14 +27,10 @@ func TestGetParamsE2E(t *testing.T) {
 	}
 
 	var (
-		user        github.User
-		catalog     github.RepoMetadata
-		registry    string
-		credentials []byte
+		user    github.User
+		catalog github.RepoMetadata
 	)
 
-	conf.Var(conf.Environ, &registry, "REGISTRY", conf.Required[string](true))
-	conf.Var(conf.Environ, &credentials, "CREDENTIALS", conf.Required[[]byte](true))
 	conf.Var(conf.Environ, &catalog.Path, "CATALOG_PATH", conf.Default(filepath.Join(os.TempDir(), "catalog")))
 	conf.Var(conf.Environ, &catalog.URL, "CATALOG_URL", conf.Required[string](true))
 	conf.Var(conf.Environ, &catalog.TargetRevision, "CATALOG_REVISION", conf.Default("master"))
@@ -43,8 +38,6 @@ func TestGetParamsE2E(t *testing.T) {
 	conf.Var(conf.Environ, &user.Token, "GH_TOKEN", conf.Required[string](true))
 
 	require.NoError(t, conf.Environ.Parse())
-
-	require.NoError(t, AuthenticateHelm(context.Background(), registry, credentials))
 
 	require.NoError(t, os.RemoveAll(catalog.Path))
 
@@ -56,20 +49,13 @@ func TestGetParamsE2E(t *testing.T) {
 
 	repo = repo.WithLogger(logger)
 
-	cacheDir, err := os.MkdirTemp("", "joy-cache-*")
-	require.NoError(t, err)
-
-	t.Logf("cache dir: %s", cacheDir)
-
 	handler := Handler(HandlerParams{
 		pluginToken: "test-token",
 		logger:      logger,
 		repo:        repo,
 		generator: &generator.Generator{
-			CacheRoot:      cacheDir,
 			LoadJoyContext: generator.RepoLoader(repo),
 			Logger:         logger,
-			ChartPuller:    generator.ChartPuller{Logger: logger},
 		},
 	})
 
@@ -93,6 +79,7 @@ func TestGetParamsE2E(t *testing.T) {
 
 	var response generator.GetParamsResponse
 	require.NoError(t, json.Unmarshal(body.Bytes(), &response))
+
 	require.Greater(t, len(response.Output.Parameters), 0)
 
 	for _, result := range response.Output.Parameters {
@@ -105,12 +92,8 @@ func TestGetParamsE2E(t *testing.T) {
 	require.Greater(t, len(logs.Records), 0)
 	for _, record := range logs.Records {
 		require.NotEmpty(t, record["level"])
-		require.NotEqualf(t, "error", record["level"], "unexpected error log: %+v", record)
+		require.NotEqual(t, "error", record["level"])
 	}
-
-	entries, err := os.ReadDir(cacheDir)
-	require.NoError(t, err)
-	require.Greater(t, len(entries), 0)
 }
 
 type TestLogOutputs struct {
