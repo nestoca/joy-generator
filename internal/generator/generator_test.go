@@ -8,10 +8,11 @@ import (
 	"github.com/nestoca/joy/api/v1alpha1"
 	joy "github.com/nestoca/joy/pkg"
 	"github.com/nestoca/joy/pkg/catalog"
+	"github.com/nestoca/joy/pkg/helm"
 )
 
 func TestGenerator(t *testing.T) {
-	baseCharts := map[string]joy.HelmChart{
+	baseCharts := map[string]helm.Chart{
 		"default": {
 			RepoURL: "test",
 			Name:    "chart",
@@ -28,7 +29,7 @@ func TestGenerator(t *testing.T) {
 		Name            string
 		Release         *v1alpha1.Release
 		DefaultChartRef string
-		Charts          map[string]joy.HelmChart
+		Charts          map[string]helm.Chart
 		ValueMapping    *joy.ValueMapping
 		ExpectedRelease *v1alpha1.Release
 		ExpectedValues  string
@@ -148,6 +149,7 @@ func TestGenerator(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {
 			generator := Generator{
+				ChartPuller: &helm.PullRendererMock{},
 				LoadJoyContext: func() (*JoyContext, error) {
 					return &JoyContext{
 						Catalog: BuildCatalogFromRelease(tc.Release),
