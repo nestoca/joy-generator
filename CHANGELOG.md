@@ -1,3 +1,12 @@
+# [0.8.0](https://github.com/nestoca/joy-generator/compare/v0.7.0...v0.8.0) (2024-05-24)
+
+
+### Features
+
+* **PL-2701:** revert "update joy to unify schema values" ([3d2480c](https://github.com/nestoca/joy-generator/commit/3d2480cc985a43d23b77afa4061256728633465a))
+
+
+
 # [0.7.0](https://github.com/nestoca/joy-generator/compare/v0.6.3...v0.7.0) (2024-05-22)
 
 
