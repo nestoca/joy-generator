@@ -25,11 +25,15 @@ COPY --chown=golang:root internal ./internal
 
 RUN go build -v -o joy-generator ./cmd/server
 
-FROM scratch AS prod
+FROM alpine:3.18 AS prod
 
 COPY --from=build /etc/passwd /etc/group  /etc/
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build --chown=golang:root /app/joy-generator /app/
+
+RUN apk add helm
+
+RUN mkdir -p /home/golang && chown -R golang:root /home/golang
 
 USER golang:root
 EXPOSE 8080

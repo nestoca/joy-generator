@@ -1,6 +1,8 @@
 package generator
 
 import (
+	"bytes"
+	"context"
 	"fmt"
 
 	"github.com/rs/zerolog"
@@ -9,13 +11,40 @@ import (
 	"github.com/nestoca/joy/api/v1alpha1"
 	joy "github.com/nestoca/joy/pkg"
 	"github.com/nestoca/joy/pkg/catalog"
+	"github.com/nestoca/joy/pkg/helm"
 
 	"github.com/nestoca/joy-generator/internal/github"
 )
 
 type Generator struct {
+	CacheRoot      string
 	LoadJoyContext JoyLoaderFunc
 	Logger         zerolog.Logger
+	ChartPuller    helm.Puller
+}
+
+type ChartPuller struct {
+	Logger zerolog.Logger
+}
+
+func (puller ChartPuller) Pull(ctx context.Context, opts helm.PullOptions) error {
+	var buffer bytes.Buffer
+
+	cli := helm.CLI{
+		IO: joy.IO{
+			Out: &buffer,
+			Err: &buffer,
+		},
+	}
+
+	if err := cli.Pull(ctx, opts); err != nil {
+		return fmt.Errorf("%w: %q", err, &buffer)
+	}
+
+	url, _ := opts.Chart.ToURL()
+	puller.Logger.Info().Str("chart", url.String()).Msg("successfully pulled chart")
+
+	return nil
 }
 
 type Result struct {
@@ -67,6 +96,13 @@ func (generator *Generator) Run() ([]Result, error) {
 		return nil, fmt.Errorf("loading joy context: %w", err)
 	}
 
+	cache := helm.ChartCache{
+		Root:            generator.CacheRoot,
+		Puller:          generator.ChartPuller,
+		Refs:            joyctx.Config.Charts,
+		DefaultChartRef: joyctx.Config.DefaultChartRef,
+	}
+
 	var reconciledReleases []Result
 	for _, crossRelease := range joyctx.Catalog.Releases.Items {
 		for _, release := range crossRelease.Releases {
@@ -80,7 +116,7 @@ func (generator *Generator) Run() ([]Result, error) {
 				Str("environment", release.Environment.Name).
 				Msg("processing release")
 
-			chart, err := joy.ChartFromRelease(release, joyctx.Config.Charts, joyctx.Config.DefaultChartRef)
+			chart, err := cache.GetReleaseChartFS(context.TODO(), release)
 			if err != nil {
 				generator.Logger.
 					Error().
@@ -94,7 +130,7 @@ func (generator *Generator) Run() ([]Result, error) {
 			release.Spec.Chart.Name = chart.Name
 			release.Spec.Chart.Version = chart.Version
 
-			values, err := joy.ReleaseValues(release, joyctx.Config.ValueMapping)
+			values, err := joy.ComputeReleaseValues(release, chart, joyctx.Config.ValueMapping)
 			if err != nil {
 				generator.Logger.
 					Error().
