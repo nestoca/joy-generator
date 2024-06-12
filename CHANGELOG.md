@@ -1,3 +1,12 @@
+## [0.8.2](https://github.com/nestoca/joy-generator/compare/v0.8.1...v0.8.2) (2024-06-12)
+
+
+### Bug Fixes
+
+* **PL-2763:** do not pull charts concurrently ([707f547](https://github.com/nestoca/joy-generator/commit/707f547c9ed56b3f8daa115806dc1b9e1641313d))
+
+
+
 ## [0.8.1](https://github.com/nestoca/joy-generator/compare/v0.8.0...v0.8.1) (2024-06-04)
 
 
