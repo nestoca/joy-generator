@@ -69,7 +69,7 @@ func TestGetParamsE2E(t *testing.T) {
 			CacheRoot:      cacheDir,
 			LoadJoyContext: generator.RepoLoader(repo),
 			Logger:         logger,
-			ChartPuller:    generator.ChartPuller{Logger: logger},
+			ChartPuller:    generator.MakeChartPuller(logger),
 		},
 	})
 

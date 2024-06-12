@@ -71,7 +71,7 @@ func run() error {
 				CacheRoot:      cfg.CacheRoot,
 				LoadJoyContext: generator.RepoLoader(repo),
 				Logger:         logger,
-				ChartPuller:    generator.ChartPuller{Logger: logger},
+				ChartPuller:    generator.MakeChartPuller(logger),
 			},
 		}),
 		ReadHeaderTimeout: 5 * time.Second,
