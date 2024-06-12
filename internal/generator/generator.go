@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/rs/zerolog"
 	"gopkg.in/yaml.v3"
@@ -23,8 +24,23 @@ type Generator struct {
 	ChartPuller    helm.Puller
 }
 
+type MutexMap sync.Map
+
+func (m *MutexMap) Get(key string) *sync.Mutex {
+	value, _ := (*sync.Map)(m).LoadOrStore(key, new(sync.Mutex))
+	return value.(*sync.Mutex)
+}
+
 type ChartPuller struct {
-	Logger zerolog.Logger
+	Logger  zerolog.Logger
+	Mutexes *MutexMap
+}
+
+func MakeChartPuller(logger zerolog.Logger) ChartPuller {
+	return ChartPuller{
+		Logger:  logger,
+		Mutexes: &MutexMap{},
+	}
 }
 
 func (puller ChartPuller) Pull(ctx context.Context, opts helm.PullOptions) error {
@@ -37,11 +53,16 @@ func (puller ChartPuller) Pull(ctx context.Context, opts helm.PullOptions) error
 		},
 	}
 
+	url, _ := opts.Chart.ToURL()
+	mutex := puller.Mutexes.Get(url.String())
+
+	mutex.Lock()
+	defer mutex.Unlock()
+
 	if err := cli.Pull(ctx, opts); err != nil {
 		return fmt.Errorf("%w: %q", err, &buffer)
 	}
 
-	url, _ := opts.Chart.ToURL()
 	puller.Logger.Info().Str("chart", url.String()).Msg("successfully pulled chart")
 
 	return nil
