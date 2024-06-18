@@ -1,3 +1,12 @@
+## [0.8.4](https://github.com/nestoca/joy-generator/compare/v0.8.3...v0.8.4) (2024-06-18)
+
+
+### Bug Fixes
+
+* **PL-2763:** check cache folder is empty before pulling ([9fe62df](https://github.com/nestoca/joy-generator/commit/9fe62dffccf6ac571dfef2f85161f59478cc8fb9))
+
+
+
 ## [0.8.3](https://github.com/nestoca/joy-generator/compare/v0.8.2...v0.8.3) (2024-06-18)
 
 
