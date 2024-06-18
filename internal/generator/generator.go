@@ -61,11 +61,11 @@ func (puller ChartPuller) Pull(ctx context.Context, opts helm.PullOptions) error
 	mutex.Lock()
 	defer mutex.Unlock()
 
-	if _, err := os.Stat(opts.OutputDir); err == nil {
-		// If output directory exists it has been pulled by another goroutine
-		// No need to pull the chart
+	if entries, err := os.ReadDir(opts.OutputDir); err == nil && len(entries) > 0 {
+		// If output directory exists and has content in it,
+		// then it has been pulled by another goroutine: no need to pull the chart
 		return nil
-	} else if !errors.Is(err, os.ErrNotExist) {
+	} else if err != nil && !errors.Is(err, os.ErrNotExist) {
 		return fmt.Errorf("failed to stat chart cache: %w", err)
 	}
 
