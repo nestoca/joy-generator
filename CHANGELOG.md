@@ -1,3 +1,12 @@
+## [0.8.3](https://github.com/nestoca/joy-generator/compare/v0.8.2...v0.8.3) (2024-06-18)
+
+
+### Bug Fixes
+
+* **PL-2763:** check chart has been written before deciding to pull ([19d5fa3](https://github.com/nestoca/joy-generator/commit/19d5fa3b1aa2834c5f166623aa4a044671ad5528))
+
+
+
 ## [0.8.2](https://github.com/nestoca/joy-generator/compare/v0.8.1...v0.8.2) (2024-06-12)
 
 
