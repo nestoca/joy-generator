@@ -26,6 +26,9 @@ sealedSecretAnnotations: {}
 
 replicaCount: 1
 
+# Configure the timeout when calling this plugin from the applicationset controller
+requestTimeout: 30
+
 image:
   repository: ghcr.io/nestoca/joy-generator
   pullPolicy: IfNotPresent

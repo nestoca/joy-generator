@@ -1,4 +1,13 @@
 ---
+# Source: joy-generator/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: my-release-joy-generator-config
+stringData:
+  GH_TOKEN: "12312312312312"
+  PLUGIN_TOKEN: '@very!l0ngands3curet0ken'
+---
 # Source: joy-generator/templates/argocd-config.yaml
 apiVersion: v1
 kind: ConfigMap
@@ -7,7 +16,7 @@ metadata:
 data:
   token: "$my-release-joy-generator-config:PLUGIN_TOKEN"
   baseUrl: "http://my-release-joy-generator"
-  requestTimeout: "30"
+  requestTimeout: "420"
 ---
 # Source: joy-generator/templates/service.yaml
 apiVersion: v1
@@ -59,9 +68,12 @@ spec:
       volumes:
         - name: catalog-dir
           emptyDir: {}
-        - name: github-app-private-key
+        - name: credentials
           secret:
-            secretName: my-release-joy-generator-github-app-key
+            secretName: super-secret
+            items:
+              - key: street-creds
+                path: credentials.json
       containers:
         - name: joy-generator
           securityContext:
@@ -71,23 +83,22 @@ spec:
           volumeMounts:
             - mountPath: /tmp/catalog
               name: catalog-dir
-            - mountPath: /etc/joy/config
-              name: github-app-private-key
+            - mountPath: /etc/joy/secrets
+              name: credentials
+              readOnly: true
           env:
             - name: CATALOG_DIR
               value: "/tmp/catalog"
             - name: CATALOG_URL
               value: "https://github.com/example/foobar.git"
-            - name: GH_APP_ID
-              value: "123456"
-            - name: GH_APP_INSTALLATION_ID
-              value: "789101112"
+            - name: GH_USER
+              value: "username"
             - name: GRACE_PERIOD
               value: "10s"
             - name: PORT
               value: ":8080"
-            - name: GH_APP_PRIVATE_KEY_PATH
-              value: /etc/joy/config/githubApp.pem
+            - name: CREDENTIALS_FILE
+              value: /etc/joy/secrets/credentials.json
           envFrom:
             - secretRef:
                 name: my-release-joy-generator-config
@@ -105,26 +116,3 @@ spec:
               port: http
           resources:
             {}
----
-# Source: joy-generator/templates/secret.yaml
-apiVersion: bitnami.com/v1alpha1
-kind: SealedSecret
-metadata:
-  name: my-release-joy-generator-config
-  annotations:
-    sealedsecrets.bitnami.com/cluster-wide: "true"
-spec:
-  encryptedData:
-    PLUGIN_TOKEN: '@very!l0ngands3curet0ken'
----
-# Source: joy-generator/templates/secret.yaml
-apiVersion: bitnami.com/v1alpha1
-kind: SealedSecret
-metadata:
-  name: my-release-joy-generator-github-app-key
-  annotations:
-    sealedsecrets.bitnami.com/cluster-wide: "true"
-spec:
-  encryptedData:
-    githubApp.pem: |
-      FOOBARLOREMISPUM

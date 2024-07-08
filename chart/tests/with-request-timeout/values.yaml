@@ -1,0 +1,17 @@
+requestTimeout: 420
+
+env:
+  CATALOG_URL: https://github.com/example/foobar.git
+  GH_USER: username
+
+secretEnv:
+  values:
+    PLUGIN_TOKEN: "@very!l0ngands3curet0ken"
+    GH_TOKEN: "12312312312312"
+
+image:
+  tag: 0.1.2
+
+credentialsSecret:
+  name: super-secret
+  key: street-creds

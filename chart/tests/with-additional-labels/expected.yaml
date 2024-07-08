@@ -24,6 +24,7 @@ metadata:
 data:
   token: "$my-release-joy-generator-config:PLUGIN_TOKEN"
   baseUrl: "http://my-release-joy-generator"
+  requestTimeout: "30"
 ---
 # Source: joy-generator/templates/service.yaml
 apiVersion: v1
