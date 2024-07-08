@@ -1,3 +1,12 @@
+# [0.9.0](https://github.com/nestoca/joy-generator/compare/v0.8.5...v0.9.0) (2024-07-08)
+
+
+### Features
+
+* **PL-2806:** make joy-generator requestTimeout configurable ([0c0d5fe](https://github.com/nestoca/joy-generator/commit/0c0d5fed6838306baffc1ce741a6d32b75a1761a))
+
+
+
 ## [0.8.5](https://github.com/nestoca/joy-generator/compare/v0.8.4...v0.8.5) (2024-06-19)
 
 
