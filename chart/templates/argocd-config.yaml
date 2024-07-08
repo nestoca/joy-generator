@@ -5,3 +5,4 @@ metadata:
 data:
   token: "${{ include "joy-generator.fullname" . }}-config:PLUGIN_TOKEN"
   baseUrl: "http://{{ include "joy-generator.fullname" . }}"
+  requestTimeout: "{{ .Values.requestTimeout }}"
