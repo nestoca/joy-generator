@@ -1,3 +1,13 @@
+# [0.10.0](https://github.com/nestoca/joy-generator/compare/v0.9.0...v0.10.0) (2024-07-25)
+
+
+### Features
+
+* **PL-2834:** trigger publish pipeline ([1cf1c8b](https://github.com/nestoca/joy-generator/commit/1cf1c8b8996d01796484c8aaae725393ec7d91a4))
+* **PL-2834:** trigger publish pipeline ([ac11623](https://github.com/nestoca/joy-generator/commit/ac1162373c11e5a2774a132e659c1817dd471195))
+
+
+
 # [0.9.0](https://github.com/nestoca/joy-generator/compare/v0.8.5...v0.9.0) (2024-07-08)
 
 
