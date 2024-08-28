@@ -13,6 +13,8 @@ import (
 	"github.com/go-git/go-git/v5/plumbing"
 	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/rs/zerolog"
+
+	"github.com/nestoca/joy-generator/internal/observability"
 )
 
 type User struct {
@@ -155,7 +157,10 @@ func (r *Repo) Directory() string {
 	return r.Metadata.Path
 }
 
-func (r *Repo) Pull() error {
+func (r *Repo) Pull(ctx context.Context) error {
+	ctx, span := observability.StartTrace(ctx, "repo_pull")
+	defer span.End()
+
 	auth, err := r.credentials()
 	if err != nil {
 		return fmt.Errorf("getting git authentication credentials: %w", err)
@@ -182,7 +187,7 @@ func (r *Repo) Pull() error {
 		pullOpts.ReferenceName = plumbing.ReferenceName("refs/heads/" + r.Metadata.TargetRevision)
 	}
 
-	if err := worktree.Pull(pullOpts); err == nil || errors.Is(err, git.NoErrAlreadyUpToDate) {
+	if err := worktree.PullContext(ctx, pullOpts); err == nil || errors.Is(err, git.NoErrAlreadyUpToDate) {
 		return nil
 	} else if !errors.Is(err, git.ErrNonFastForwardUpdate) {
 		return err
@@ -194,7 +199,7 @@ func (r *Repo) Pull() error {
 		Auth:  auth,
 		Force: true,
 	}
-	if err := r.repository.Fetch(fetchOpts); err != nil && !errors.Is(err, git.NoErrAlreadyUpToDate) {
+	if err := r.repository.FetchContext(ctx, fetchOpts); err != nil && !errors.Is(err, git.NoErrAlreadyUpToDate) {
 		return fmt.Errorf("fetching from remote: %w", err)
 	}
 

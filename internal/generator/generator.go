@@ -17,6 +17,7 @@ import (
 	"github.com/nestoca/joy/pkg/helm"
 
 	"github.com/nestoca/joy-generator/internal/github"
+	"github.com/nestoca/joy-generator/internal/observability"
 )
 
 type Generator struct {
@@ -97,11 +98,14 @@ type JoyContext struct {
 	Config  *joy.Config
 }
 
-type JoyLoaderFunc func() (*JoyContext, error)
+type JoyLoaderFunc func(ctx context.Context) (*JoyContext, error)
 
 func RepoLoader(repo *github.Repo) JoyLoaderFunc {
-	return func() (*JoyContext, error) {
-		if err := repo.Pull(); err != nil {
+	return func(ctx context.Context) (*JoyContext, error) {
+		ctx, span := observability.StartTrace(ctx, "load_joy_context")
+		defer span.End()
+
+		if err := repo.Pull(ctx); err != nil {
 			return nil, fmt.Errorf("pulling git repo: %w", err)
 		}
 
@@ -121,8 +125,8 @@ func RepoLoader(repo *github.Repo) JoyLoaderFunc {
 
 // Run runs the generator and returns a slice of results. Each result contains the release, the environment where it
 // will be deployed and the rendered values string.
-func (generator *Generator) Run() ([]Result, error) {
-	joyctx, err := generator.LoadJoyContext()
+func (generator *Generator) Run(ctx context.Context) ([]Result, error) {
+	joyctx, err := generator.LoadJoyContext(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("loading joy context: %w", err)
 	}
@@ -147,7 +151,7 @@ func (generator *Generator) Run() ([]Result, error) {
 				Str("environment", release.Environment.Name).
 				Msg("processing release")
 
-			chart, err := cache.GetReleaseChartFS(context.TODO(), release)
+			chart, err := cache.GetReleaseChartFS(ctx, release)
 			if err != nil {
 				generator.Logger.
 					Error().
@@ -161,7 +165,7 @@ func (generator *Generator) Run() ([]Result, error) {
 			release.Spec.Chart.Name = chart.Name
 			release.Spec.Chart.Version = chart.Version
 
-			values, err := joy.ComputeReleaseValues(release, chart, joyctx.Config.ValueMapping)
+			values, err := joy.ComputeReleaseValues(release, chart)
 			if err != nil {
 				generator.Logger.
 					Error().
