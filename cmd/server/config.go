@@ -13,6 +13,7 @@ import (
 type Config struct {
 	Port        string
 	GracePeriod time.Duration
+	Environment string
 
 	PluginToken string
 
@@ -30,6 +31,12 @@ type Config struct {
 		User github.User
 		App  github.App
 	}
+
+	Otel struct {
+		Address        string
+		ServiceName    string
+		ServiceVersion string
+	}
 }
 
 func GetConfig() Config {
@@ -42,6 +49,7 @@ func GetConfig() Config {
 
 	conf.Var(conf.Environ, &cfg.CacheRoot, "CACHE_ROOT", conf.Default(filepath.Join(home, ".cache", "joy")))
 	conf.Var(conf.Environ, &cfg.Port, "PORT", conf.Default(":8080"))
+	conf.Var(conf.Environ, &cfg.Environment, "ENVIRONMENT", conf.Default("local"))
 	conf.Var(conf.Environ, &cfg.GracePeriod, "GRACE_PERIOD", conf.Default(10*time.Second))
 	conf.Var(conf.Environ, &cfg.PluginToken, "PLUGIN_TOKEN")
 
@@ -57,6 +65,10 @@ func GetConfig() Config {
 
 	conf.Var(conf.Environ, &cfg.Google.CredentialsFilePath, "CREDENTIALS_FILE")
 	conf.Var(conf.Environ, &cfg.Google.Repository, "GOOGLE_ARTIFACT_REPOSITORY")
+
+	conf.Var(conf.Environ, &cfg.Otel.Address, "OTEL_ADDR")
+	conf.Var(conf.Environ, &cfg.Otel.ServiceName, "OTEL_SERVICE_NAME", conf.Default("joy-generator"))
+	conf.Var(conf.Environ, &cfg.Otel.ServiceVersion, "OTEL_SERVICE_VERSION")
 
 	conf.Environ.MustParse()
 

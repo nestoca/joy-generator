@@ -5,6 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
+
+	"github.com/nestoca/joy-generator/internal/observability"
 )
 
 type Output struct {
@@ -28,6 +30,9 @@ type API struct {
 }
 
 func (api API) HandleGetParams(c *gin.Context) {
+	ctx, span := observability.StartTrace(c.Request.Context(), "get_params")
+	defer span.End()
+
 	var request GetParamsRequest
 	if err := c.BindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -37,7 +42,7 @@ func (api API) HandleGetParams(c *gin.Context) {
 		return
 	}
 
-	results, err := api.Generator.Run()
+	results, err := api.Generator.Run(ctx)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error":  "failed to generate results",

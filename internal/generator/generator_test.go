@@ -1,6 +1,8 @@
 package generator
 
 import (
+	"context"
+	"maps"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -30,7 +32,6 @@ func TestGenerator(t *testing.T) {
 		Release         *v1alpha1.Release
 		DefaultChartRef string
 		Charts          map[string]helm.Chart
-		ValueMapping    *joy.ValueMapping
 		ExpectedRelease *v1alpha1.Release
 		ExpectedValues  string
 	}{
@@ -112,11 +113,16 @@ func TestGenerator(t *testing.T) {
 				},
 			},
 			DefaultChartRef: "custom",
-			Charts:          baseCharts,
-			ValueMapping: &joy.ValueMapping{Mappings: map[string]any{
-				"annotations.test": true,
-				"image":            "image@{{ .Release.Spec.Version }}",
-			}},
+			Charts: func() map[string]helm.Chart {
+				charts := maps.Clone(baseCharts)
+        custom := charts["custom"]
+				custom.Mappings = map[string]any{
+					"annotations.test": true,
+					"image":            "image@{{ .Release.Spec.Version }}",
+				}
+        charts["custom"] = custom
+        return charts
+			}(),
 			ExpectedRelease: &v1alpha1.Release{
 				ApiVersion:      "joy.nesto.ca/v1alpha1",
 				Kind:            "Release",
@@ -150,21 +156,20 @@ func TestGenerator(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			generator := Generator{
 				ChartPuller: &helm.PullRendererMock{},
-				LoadJoyContext: func() (*JoyContext, error) {
+				LoadJoyContext: func(ctx context.Context) (*JoyContext, error) {
 					return &JoyContext{
 						Catalog: BuildCatalogFromRelease(tc.Release),
 						Config: &joy.Config{
 							Catalog: joy.CatalogConfig{
 								DefaultChartRef: tc.DefaultChartRef,
 								Charts:          tc.Charts,
-								ValueMapping:    tc.ValueMapping,
 							},
 						},
 					}, nil
 				},
 			}
 
-			results, err := generator.Run()
+			results, err := generator.Run(context.Background())
 			require.NoError(t, err)
 
 			require.Len(t, results, 1)

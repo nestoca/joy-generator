@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"cmp"
 	"errors"
 	"fmt"
 	"net/http"
@@ -10,6 +11,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
+
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/nestoca/joy-generator/internal/generator"
 	"github.com/nestoca/joy-generator/internal/github"
@@ -30,6 +34,7 @@ func Handler(params HandlerParams) http.Handler {
 	engine := gin.New()
 
 	engine.Use(
+		SpanNamer,
 		RecoveryMiddleware(params.logger),
 		ObservabilityMiddleware(params.logger),
 	)
@@ -39,7 +44,7 @@ func Handler(params HandlerParams) http.Handler {
 	})
 
 	engine.GET("/api/v1/readiness", func(c *gin.Context) {
-		if err := params.repo.Pull(); err != nil {
+		if err := params.repo.Pull(c.Request.Context()); err != nil {
 			c.JSON(500, gin.H{
 				"status": "error",
 				"detail": err.Error(),
@@ -65,7 +70,7 @@ func Handler(params HandlerParams) http.Handler {
 		generatorAPI.HandleGetParams,
 	)
 
-	return engine.Handler()
+	return otelhttp.NewHandler(engine.Handler(), "handle_request")
 }
 
 func RecoveryMiddleware(logger zerolog.Logger) gin.HandlerFunc {
@@ -134,4 +139,11 @@ func (recorder *ErrorRecorder) Write(data []byte) (int, error) {
 		_, _ = recorder.buffer.Write(data)
 	}
 	return recorder.ResponseWriter.Write(data)
+}
+
+func SpanNamer(c *gin.Context) {
+	// If we are in the context of a span, set the name to be the Method and Matched path of the route.
+	if span := trace.SpanFromContext(c.Request.Context()); span.IsRecording() {
+		span.SetName(fmt.Sprintf("%s %s", c.Request.Method, cmp.Or(c.FullPath(), "match_not_found")))
+	}
 }

@@ -13,10 +13,12 @@ import (
 	"time"
 
 	"github.com/davidmdm/x/xcontext"
+	"github.com/davidmdm/x/xerr"
 	"github.com/rs/zerolog"
 
 	"github.com/nestoca/joy-generator/internal/generator"
 	"github.com/nestoca/joy-generator/internal/github"
+	"github.com/nestoca/joy-generator/internal/observability"
 )
 
 func main() {
@@ -29,10 +31,23 @@ func main() {
 	}
 }
 
-func run() error {
+func run() (err error) {
 	logger := zerolog.New(os.Stdout)
 
 	cfg := GetConfig()
+
+	teardown, err := observability.SetupTracer(observability.TracerOptions{
+		OTLPEndpoint:   cfg.Otel.Address,
+		Environment:    cfg.Environment,
+		ServiceName:    cfg.Otel.ServiceName,
+		ServiceVersion: cfg.Otel.ServiceVersion,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to setup opentelemetry tracer: %w", err)
+	}
+	defer func() {
+		err = xerr.MultiErrFrom("", err, teardown())
+	}()
 
 	ctx, stop := xcontext.WithSignalCancelation(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
