@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/davidmdm/conf"
@@ -51,7 +52,10 @@ func TestGetParamsE2E(t *testing.T) {
 	repo, err := user.NewRepo(catalog)
 	require.NoError(t, err, "failed to create repo for user: %s", user.Name)
 
-	logs := &TestLogOutputs{}
+	logs := &TestLogOutputs{
+		Records: []map[string]any{},
+		Mutex:   &sync.Mutex{},
+	}
 	logger := zerolog.New(logs)
 
 	repo = repo.WithLogger(logger)
@@ -115,6 +119,7 @@ func TestGetParamsE2E(t *testing.T) {
 
 type TestLogOutputs struct {
 	Records []map[string]any
+	Mutex   *sync.Mutex
 }
 
 func (output *TestLogOutputs) Write(data []byte) (int, error) {
@@ -122,6 +127,10 @@ func (output *TestLogOutputs) Write(data []byte) (int, error) {
 	if err := json.Unmarshal(data, &record); err != nil {
 		return 0, fmt.Errorf("invalid record: %w", err)
 	}
+
+	output.Mutex.Lock()
+	defer output.Mutex.Unlock()
+
 	output.Records = append(output.Records, record)
 	return len(data), nil
 }
