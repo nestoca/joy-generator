@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/rs/zerolog"
+	"go.opentelemetry.io/otel/attribute"
 	"gopkg.in/yaml.v3"
 
 	"github.com/nestoca/joy/api/v1alpha1"
@@ -126,10 +127,17 @@ func RepoLoader(repo *github.Repo) JoyLoaderFunc {
 // Run runs the generator and returns a slice of results. Each result contains the release, the environment where it
 // will be deployed and the rendered values string.
 func (generator *Generator) Run(ctx context.Context) ([]Result, error) {
+	ctx, span := observability.StartTrace(ctx, "generator_run")
+	defer span.End()
+
 	joyctx, err := generator.LoadJoyContext(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("loading joy context: %w", err)
 	}
+
+	span.SetAttributes(
+		attribute.Int("release_count", len(joyctx.Catalog.Releases.Items)),
+	)
 
 	cache := helm.ChartCache{
 		Root:            generator.CacheRoot,
@@ -141,56 +149,66 @@ func (generator *Generator) Run(ctx context.Context) ([]Result, error) {
 	var reconciledReleases []Result
 	for _, crossRelease := range joyctx.Catalog.Releases.Items {
 		for _, release := range crossRelease.Releases {
-			if release == nil {
-				continue
-			}
+			func() {
+				if release == nil {
+					return
+				}
 
-			generator.Logger.
-				Debug().
-				Str("release", release.Name).
-				Str("environment", release.Environment.Name).
-				Msg("processing release")
+				ctx, span := observability.StartTrace(ctx, "release_render")
+				defer span.End()
 
-			chart, err := cache.GetReleaseChartFS(ctx, release)
-			if err != nil {
+				span.SetAttributes(
+					attribute.String("release", release.Name),
+					attribute.String("env", release.Environment.Name),
+				)
+
 				generator.Logger.
-					Error().
-					Err(err).
-					Str("release", release.Name).Str("environment", release.Environment.Name).
-					Msgf("error getting chart for release %s", release.Name)
-				continue
-			}
+					Debug().
+					Str("release", release.Name).
+					Str("environment", release.Environment.Name).
+					Msg("processing release")
 
-			release.Spec.Chart.RepoUrl = chart.RepoURL
-			release.Spec.Chart.Name = chart.Name
-			release.Spec.Chart.Version = chart.Version
+				chart, err := cache.GetReleaseChartFS(ctx, release)
+				if err != nil {
+					generator.Logger.
+						Error().
+						Err(err).
+						Str("release", release.Name).Str("environment", release.Environment.Name).
+						Msgf("error getting chart for release %s", release.Name)
+					return
+				}
 
-			values, err := joy.ComputeReleaseValues(release, chart)
-			if err != nil {
-				generator.Logger.
-					Error().
-					Err(err).
-					Str("release", release.Name).Str("environment", release.Environment.Name).
-					Msgf("error computing values for release %s", release.Name)
-				continue
-			}
+				release.Spec.Chart.RepoUrl = chart.RepoURL
+				release.Spec.Chart.Name = chart.Name
+				release.Spec.Chart.Version = chart.Version
 
-			renderedValues, err := yaml.Marshal(values)
-			if err != nil {
-				generator.Logger.
-					Error().
-					Err(err).
-					Str("release", release.Name).Str("environment", release.Environment.Name).
-					Msgf("error marshaling values for release %s", release.Name)
-				continue
-			}
+				values, err := joy.ComputeReleaseValues(release, chart)
+				if err != nil {
+					generator.Logger.
+						Error().
+						Err(err).
+						Str("release", release.Name).Str("environment", release.Environment.Name).
+						Msgf("error computing values for release %s", release.Name)
+					return
+				}
 
-			reconciledReleases = append(reconciledReleases, Result{
-				Release:     release,
-				Environment: release.Environment,
-				Project:     release.Project,
-				Values:      string(renderedValues),
-			})
+				renderedValues, err := yaml.Marshal(values)
+				if err != nil {
+					generator.Logger.
+						Error().
+						Err(err).
+						Str("release", release.Name).Str("environment", release.Environment.Name).
+						Msgf("error marshaling values for release %s", release.Name)
+					return
+				}
+
+				reconciledReleases = append(reconciledReleases, Result{
+					Release:     release,
+					Environment: release.Environment,
+					Project:     release.Project,
+					Values:      string(renderedValues),
+				})
+			}()
 		}
 	}
 
