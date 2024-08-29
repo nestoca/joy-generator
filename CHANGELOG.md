@@ -1,3 +1,12 @@
+# [0.11.0](https://github.com/nestoca/joy-generator/compare/v0.10.0...v0.11.0) (2024-08-29)
+
+
+### Features
+
+* **PL-2800:** setup opentelemetry tracing ([ef190e4](https://github.com/nestoca/joy-generator/commit/ef190e4857cfad70888062699084764030a5b344))
+
+
+
 # [0.10.0](https://github.com/nestoca/joy-generator/compare/v0.9.0...v0.10.0) (2024-07-25)
 
 
