@@ -1,3 +1,17 @@
+# [0.12.0](https://github.com/nestoca/joy-generator/compare/v0.11.0...v0.12.0) (2024-08-29)
+
+
+### Bug Fixes
+
+* **PL-2800:** downgrade otelhttp because of introduced bug superflously writing header ([507f45a](https://github.com/nestoca/joy-generator/commit/507f45a720b9b6d2a22db9355faedd703a2af7a4))
+
+
+### Features
+
+* **PL-2800:** add spans to generator run ([218b1c3](https://github.com/nestoca/joy-generator/commit/218b1c3eceb3e57c6306847b95934269d5905899))
+
+
+
 # [0.11.0](https://github.com/nestoca/joy-generator/compare/v0.10.0...v0.11.0) (2024-08-29)
 
 
