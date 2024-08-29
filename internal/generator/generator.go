@@ -135,10 +135,6 @@ func (generator *Generator) Run(ctx context.Context) ([]Result, error) {
 		return nil, fmt.Errorf("loading joy context: %w", err)
 	}
 
-	span.SetAttributes(
-		attribute.Int("release_count", len(joyctx.Catalog.Releases.Items)),
-	)
-
 	cache := helm.ChartCache{
 		Root:            generator.CacheRoot,
 		Puller:          generator.ChartPuller,
@@ -146,71 +142,93 @@ func (generator *Generator) Run(ctx context.Context) ([]Result, error) {
 		DefaultChartRef: joyctx.Config.DefaultChartRef,
 	}
 
-	var reconciledReleases []Result
-	for _, crossRelease := range joyctx.Catalog.Releases.Items {
-		for _, release := range crossRelease.Releases {
-			func() {
-				if release == nil {
-					return
-				}
-
-				ctx, span := observability.StartTrace(ctx, "release_render")
-				defer span.End()
-
-				span.SetAttributes(
-					attribute.String("release", release.Name),
-					attribute.String("env", release.Environment.Name),
-				)
-
-				generator.Logger.
-					Debug().
-					Str("release", release.Name).
-					Str("environment", release.Environment.Name).
-					Msg("processing release")
-
-				chart, err := cache.GetReleaseChartFS(ctx, release)
-				if err != nil {
-					generator.Logger.
-						Error().
-						Err(err).
-						Str("release", release.Name).Str("environment", release.Environment.Name).
-						Msgf("error getting chart for release %s", release.Name)
-					return
-				}
-
-				release.Spec.Chart.RepoUrl = chart.RepoURL
-				release.Spec.Chart.Name = chart.Name
-				release.Spec.Chart.Version = chart.Version
-
-				values, err := joy.ComputeReleaseValues(release, chart)
-				if err != nil {
-					generator.Logger.
-						Error().
-						Err(err).
-						Str("release", release.Name).Str("environment", release.Environment.Name).
-						Msgf("error computing values for release %s", release.Name)
-					return
-				}
-
-				renderedValues, err := yaml.Marshal(values)
-				if err != nil {
-					generator.Logger.
-						Error().
-						Err(err).
-						Str("release", release.Name).Str("environment", release.Environment.Name).
-						Msgf("error marshaling values for release %s", release.Name)
-					return
-				}
-
-				reconciledReleases = append(reconciledReleases, Result{
-					Release:     release,
-					Environment: release.Environment,
-					Project:     release.Project,
-					Values:      string(renderedValues),
-				})
-			}()
+	var releases []*v1alpha1.Release
+	for _, cross := range joyctx.Catalog.Releases.Items {
+		for _, release := range cross.Releases {
+			if release == nil {
+				continue
+			}
+			releases = append(releases, release)
 		}
 	}
+
+	span.SetAttributes(
+		attribute.Int("release_count", len(joyctx.Catalog.Releases.Items)),
+	)
+
+	var (
+		wg                 sync.WaitGroup
+		reconciledReleases = make([]Result, len(releases))
+		semaphore          = make(chan struct{}, 8)
+	)
+
+	for i, release := range releases {
+		semaphore <- struct{}{}
+
+    wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+			defer func() { <-semaphore }()
+
+			ctx, span := observability.StartTrace(ctx, "release_render")
+			defer span.End()
+
+			span.SetAttributes(
+				attribute.String("release", release.Name),
+				attribute.String("env", release.Environment.Name),
+			)
+
+			generator.Logger.
+				Debug().
+				Str("release", release.Name).
+				Str("environment", release.Environment.Name).
+				Msg("processing release")
+
+			chart, err := cache.GetReleaseChartFS(ctx, release)
+			if err != nil {
+				generator.Logger.
+					Error().
+					Err(err).
+					Str("release", release.Name).Str("environment", release.Environment.Name).
+					Msgf("error getting chart for release %s", release.Name)
+				return
+			}
+
+			release.Spec.Chart.RepoUrl = chart.RepoURL
+			release.Spec.Chart.Name = chart.Name
+			release.Spec.Chart.Version = chart.Version
+
+			values, err := joy.ComputeReleaseValues(release, chart)
+			if err != nil {
+				generator.Logger.
+					Error().
+					Err(err).
+					Str("release", release.Name).Str("environment", release.Environment.Name).
+					Msgf("error computing values for release %s", release.Name)
+				return
+			}
+
+			renderedValues, err := yaml.Marshal(values)
+			if err != nil {
+				generator.Logger.
+					Error().
+					Err(err).
+					Str("release", release.Name).Str("environment", release.Environment.Name).
+					Msgf("error marshaling values for release %s", release.Name)
+				return
+			}
+
+			reconciledReleases[i] = Result{
+				Release:     release,
+				Environment: release.Environment,
+				Project:     release.Project,
+				Values:      string(renderedValues),
+			}
+		}()
+	}
+
+	wg.Wait()
 
 	return reconciledReleases, nil
 }
