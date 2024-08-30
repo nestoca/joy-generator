@@ -160,7 +160,7 @@ func (generator *Generator) Run(ctx context.Context) ([]Result, error) {
 	var (
 		wg                 sync.WaitGroup
 		reconciledReleases = make([]Result, len(releases))
-		semaphore          = make(chan struct{}, min(generator.Concurrency, 1))
+		semaphore          = make(chan struct{}, max(generator.Concurrency, 1))
 	)
 
 	for i, release := range releases {
