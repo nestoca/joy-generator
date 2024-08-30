@@ -6,7 +6,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"regexp"
 	"runtime/debug"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -141,9 +143,13 @@ func (recorder *ErrorRecorder) Write(data []byte) (int, error) {
 	return recorder.ResponseWriter.Write(data)
 }
 
+var nonWordCharacters = regexp.MustCompile(`\W+`)
+
 func SpanNamer(c *gin.Context) {
-	// If we are in the context of a span, set the name to be the Method and Matched path of the route.
 	if span := trace.SpanFromContext(c.Request.Context()); span.IsRecording() {
-		span.SetName(fmt.Sprintf("%s %s", c.Request.Method, cmp.Or(c.FullPath(), "match_not_found")))
+		name := c.Request.Method + cmp.Or(c.FullPath(), "route_not_found")
+		name = nonWordCharacters.ReplaceAllString(name, "_")
+    name = strings.ToLower(name)
+		span.SetName(name)
 	}
 }
