@@ -87,6 +87,7 @@ func run() (err error) {
 				LoadJoyContext: generator.RepoLoader(repo),
 				Logger:         logger,
 				ChartPuller:    generator.MakeChartPuller(logger),
+				Concurrency:    cfg.Generator.Concurrency,
 			},
 		}),
 		ReadHeaderTimeout: 5 * time.Second,

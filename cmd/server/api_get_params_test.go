@@ -74,6 +74,7 @@ func TestGetParamsE2E(t *testing.T) {
 			LoadJoyContext: generator.RepoLoader(repo),
 			Logger:         logger,
 			ChartPuller:    generator.MakeChartPuller(logger),
+			Concurrency:    4,
 		},
 	})
 

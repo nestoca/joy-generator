@@ -149,7 +149,7 @@ func SpanNamer(c *gin.Context) {
 	if span := trace.SpanFromContext(c.Request.Context()); span.IsRecording() {
 		name := c.Request.Method + cmp.Or(c.FullPath(), "route_not_found")
 		name = nonWordCharacters.ReplaceAllString(name, "_")
-    name = strings.ToLower(name)
+		name = strings.ToLower(name)
 		span.SetName(name)
 	}
 }

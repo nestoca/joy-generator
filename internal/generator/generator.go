@@ -26,6 +26,7 @@ type Generator struct {
 	LoadJoyContext JoyLoaderFunc
 	Logger         zerolog.Logger
 	ChartPuller    helm.Puller
+	Concurrency    int
 }
 
 type MutexMap sync.Map
@@ -159,13 +160,13 @@ func (generator *Generator) Run(ctx context.Context) ([]Result, error) {
 	var (
 		wg                 sync.WaitGroup
 		reconciledReleases = make([]Result, len(releases))
-		semaphore          = make(chan struct{}, 8)
+		semaphore          = make(chan struct{}, min(generator.Concurrency, 1))
 	)
 
 	for i, release := range releases {
 		semaphore <- struct{}{}
 
-    wg.Add(1)
+		wg.Add(1)
 
 		go func() {
 			defer wg.Done()
