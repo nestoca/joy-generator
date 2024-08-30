@@ -1,3 +1,12 @@
+# [0.13.0](https://github.com/nestoca/joy-generator/compare/v0.12.0...v0.13.0) (2024-08-30)
+
+
+### Features
+
+* add concurrency to release rendering ([c364039](https://github.com/nestoca/joy-generator/commit/c3640397ab9f31ff7713c6981f7cdb3a2cbbc310))
+
+
+
 # [0.12.0](https://github.com/nestoca/joy-generator/compare/v0.11.0...v0.12.0) (2024-08-29)
 
 
