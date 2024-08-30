@@ -1,3 +1,18 @@
+# [0.14.0](https://github.com/nestoca/joy-generator/compare/v0.13.0...v0.14.0) (2024-08-30)
+
+
+### Bug Fixes
+
+* minimum concurrency ([6c7a750](https://github.com/nestoca/joy-generator/commit/6c7a7502d2e8f55f7a990bb66131c97fdffa7900))
+* span names ([5b6ee95](https://github.com/nestoca/joy-generator/commit/5b6ee95def112084f79d7ed5d51a7825e78b7f0e))
+
+
+### Features
+
+* make generator concurrency configurable ([92a3ab8](https://github.com/nestoca/joy-generator/commit/92a3ab8e05f80856d7d62c66dc5c0af5b32443e0))
+
+
+
 # [0.13.0](https://github.com/nestoca/joy-generator/compare/v0.12.0...v0.13.0) (2024-08-30)
 
 
