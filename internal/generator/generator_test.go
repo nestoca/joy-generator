@@ -115,13 +115,13 @@ func TestGenerator(t *testing.T) {
 			DefaultChartRef: "custom",
 			Charts: func() map[string]helm.Chart {
 				charts := maps.Clone(baseCharts)
-        custom := charts["custom"]
+				custom := charts["custom"]
 				custom.Mappings = map[string]any{
 					"annotations.test": true,
 					"image":            "image@{{ .Release.Spec.Version }}",
 				}
-        charts["custom"] = custom
-        return charts
+				charts["custom"] = custom
+				return charts
 			}(),
 			ExpectedRelease: &v1alpha1.Release{
 				ApiVersion:      "joy.nesto.ca/v1alpha1",

@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	"github.com/davidmdm/conf"
@@ -20,6 +21,10 @@ type Config struct {
 	Catalog github.RepoMetadata
 
 	CacheRoot string
+
+	Generator struct {
+		Concurrency int
+	}
 
 	Google struct {
 		Repository          string
@@ -69,6 +74,8 @@ func GetConfig() Config {
 	conf.Var(conf.Environ, &cfg.Otel.Address, "OTEL_ADDR")
 	conf.Var(conf.Environ, &cfg.Otel.ServiceName, "OTEL_SERVICE_NAME", conf.Default("joy-generator"))
 	conf.Var(conf.Environ, &cfg.Otel.ServiceVersion, "OTEL_SERVICE_VERSION")
+
+	conf.Var(conf.Environ, &cfg.Generator.Concurrency, "GENERATOR_CONCURRENCY", conf.Default(runtime.NumCPU()))
 
 	conf.Environ.MustParse()
 
