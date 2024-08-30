@@ -1,3 +1,12 @@
+# [0.15.0](https://github.com/nestoca/joy-generator/compare/v0.14.0...v0.15.0) (2024-08-30)
+
+
+### Features
+
+* release-version ([33dd66b](https://github.com/nestoca/joy-generator/commit/33dd66bf43e5093ab05b44bd14f4d477dfab8f9c))
+
+
+
 # [0.14.0](https://github.com/nestoca/joy-generator/compare/v0.13.0...v0.14.0) (2024-08-30)
 
 
