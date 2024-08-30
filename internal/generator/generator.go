@@ -111,12 +111,12 @@ func RepoLoader(repo *github.Repo) JoyLoaderFunc {
 			return nil, fmt.Errorf("pulling git repo: %w", err)
 		}
 
-		cfg, err := joy.LoadConfigFromCatalog(repo.Directory())
+		cfg, err := joy.LoadConfigFromCatalog(ctx, repo.Directory())
 		if err != nil {
 			return nil, fmt.Errorf("loading catalog config: %w", err)
 		}
 
-		cat, err := catalog.Load(repo.Directory(), cfg.KnownChartRefs())
+		cat, err := catalog.Load(ctx, repo.Directory(), cfg.KnownChartRefs())
 		if err != nil {
 			return nil, fmt.Errorf("loading catalog: %w", err)
 		}
