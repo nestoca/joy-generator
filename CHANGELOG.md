@@ -1,3 +1,12 @@
+# [0.16.0](https://github.com/nestoca/joy-generator/compare/v0.15.0...v0.16.0) (2024-09-03)
+
+
+### Features
+
+* **PL-2911:** configure health probe timeouts ([28bd67d](https://github.com/nestoca/joy-generator/commit/28bd67df05dc2ae99280f8d93e498cabef048d4b))
+
+
+
 # [0.15.0](https://github.com/nestoca/joy-generator/compare/v0.14.0...v0.15.0) (2024-08-30)
 
 
