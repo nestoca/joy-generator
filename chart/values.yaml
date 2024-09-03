@@ -19,7 +19,7 @@ secretEnv:
     # PLUGIN_TOKEN: ""
     # GH_TOKEN: ""
 
-githubAppPrivateKey: ""
+githubAppPrivateKey: ''
 
 # Additional annotations for sealed secrets
 sealedSecretAnnotations: {}
@@ -33,11 +33,14 @@ image:
   repository: ghcr.io/nestoca/joy-generator
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: ''
+
+probes:
+  timeoutSeconds: 1
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: ''
+fullnameOverride: ''
 
 podAnnotations: {}
 

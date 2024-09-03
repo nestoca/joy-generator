@@ -99,9 +99,11 @@ spec:
             httpGet:
               path: /api/v1/health
               port: http
+            timeoutSeconds: 1
           readinessProbe:
             httpGet:
               path: /api/v1/readiness
               port: http
+            timeoutSeconds: 1
           resources:
             {}
