@@ -88,10 +88,12 @@ spec:
             httpGet:
               path: /api/v1/health
               port: http
+            timeoutSeconds: {{ .Values.probes.timeoutSeconds }}
           readinessProbe:
             httpGet:
               path: /api/v1/readiness
               port: http
+            timeoutSeconds: {{ .Values.probes.timeoutSeconds }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
