@@ -9,7 +9,7 @@ require (
 	github.com/davidmdm/x/xerr v0.0.3
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-git/go-git/v5 v5.12.0
-	github.com/nestoca/joy v0.60.1
+	github.com/nestoca/joy v0.61.1
 	github.com/rs/zerolog v1.33.0
 	github.com/stretchr/testify v1.9.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.53.0
