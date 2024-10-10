@@ -1,3 +1,12 @@
+## [0.16.1](https://github.com/nestoca/joy-generator/compare/v0.16.0...v0.16.1) (2024-10-10)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/nestoca/joy to v0.61.1 ([d4ddb29](https://github.com/nestoca/joy-generator/commit/d4ddb29f0e3a2bf8a36d82996e59d04bcb2587b3))
+
+
+
 # [0.16.0](https://github.com/nestoca/joy-generator/compare/v0.15.0...v0.16.0) (2024-09-03)
 
 
