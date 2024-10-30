@@ -1,3 +1,12 @@
+# [0.17.0](https://github.com/nestoca/joy-generator/compare/v0.16.1...v0.17.0) (2024-10-30)
+
+
+### Features
+
+* **PL-3082:** add namespace field to releases ([#67](https://github.com/nestoca/joy-generator/issues/67)) ([9b9850f](https://github.com/nestoca/joy-generator/commit/9b9850f7c88f44b725084b8ce6226ee5538b925d))
+
+
+
 ## [0.16.1](https://github.com/nestoca/joy-generator/compare/v0.16.0...v0.16.1) (2024-10-10)
 
 
