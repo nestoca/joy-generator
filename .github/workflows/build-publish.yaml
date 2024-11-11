@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   test-chart:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v3
       - name: Test chart
@@ -24,7 +24,7 @@ jobs:
           args: --namespace my-namespace --release my-release --app-version 1.0.0 --chart-version 1.0.0
 
   test-app:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v3
       - name: Setup Go environment
@@ -39,7 +39,7 @@ jobs:
         run: go test -race ./...
 
   test-internal:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Dispatch workflow
         env:
@@ -51,7 +51,7 @@ jobs:
           gh run watch --exit-status --repo github.com/nestoca/catalog $workflowId
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -71,7 +71,7 @@ jobs:
       - test-internal
       - test-chart
       - build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       packages: write
       contents: write
