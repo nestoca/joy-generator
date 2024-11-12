@@ -1,3 +1,12 @@
+## [0.18.1](https://github.com/nestoca/joy-generator/compare/v0.18.0...v0.18.1) (2024-11-12)
+
+
+### Bug Fixes
+
+* **PL-3111:** use joy 0.63.1 ([#70](https://github.com/nestoca/joy-generator/issues/70)) ([92cd284](https://github.com/nestoca/joy-generator/commit/92cd284eec986d519c5c31b2a915d22dbb7c0d26))
+
+
+
 # [0.18.0](https://github.com/nestoca/joy-generator/compare/v0.17.0...v0.18.0) (2024-10-30)
 
 
