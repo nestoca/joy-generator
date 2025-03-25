@@ -10,8 +10,8 @@ ENV HOME=/home/golang
 
 WORKDIR /app
 
-RUN adduser -h $HOME -D -u 1000 -G root golang &&
-  chown golang:root /app &&
+RUN adduser -h $HOME -D -u 1000 -G root golang && \
+  chown golang:root /app && \
   chmod g=u /app $HOME
 
 USER golang:root
