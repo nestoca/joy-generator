@@ -1,6 +1,8 @@
 module github.com/nestoca/joy-generator
 
-go 1.22.0
+go 1.23.0
+
+toolchain go1.23.6
 
 require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.11.0
@@ -19,7 +21,7 @@ require (
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.29.0
 	go.opentelemetry.io/otel/sdk v1.29.0
 	go.opentelemetry.io/otel/trace v1.29.0
-	golang.org/x/crypto v0.35.0 // indirect; security update
+	golang.org/x/crypto v0.36.0 // indirect; security update
 	golang.org/x/net v0.37.0 // indirect; security update
 	gopkg.in/yaml.v3 v3.0.1
 )
