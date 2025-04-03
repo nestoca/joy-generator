@@ -90,9 +90,18 @@ jobs:
           curl -L https://github.com/mikefarah/yq/releases/download/${{ env.YQ_VERSION }}/yq_linux_amd64.tar.gz | tar xvz
           sudo mv yq_linux_amd64 /usr/local/bin/yq
 
+      - name: NestoCI generate a token
+        if: ${{ ! needs.build-info.outputs.skip-build }}
+        id: nestoci-generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.NESTOCI_APP_ID }}
+          private-key: ${{ secrets.NESTOCI_APP_PRIVATE_KEY }}
+          owner: nestoca
+
       - uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GH_TOKEN }}
+          token: ${{ steps.nestoci-generate-token.outputs.token }}
           fetch-depth: 0
 
       - name: Set up Docker Buildx
