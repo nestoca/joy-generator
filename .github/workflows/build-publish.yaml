@@ -175,7 +175,7 @@ jobs:
 
       - name: Upload pages artifact
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ runner.temp }}/helm-release
 
