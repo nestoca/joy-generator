@@ -1,3 +1,18 @@
+# [0.19.0](https://github.com/nestoca/joy-generator/compare/v0.18.1...v0.19.0) (2025-04-04)
+
+
+### Bug Fixes
+
+* **PL-3219:** update (deprecated) actions/upload-pages-artifact to v4 ([#73](https://github.com/nestoca/joy-generator/issues/73)) ([8d3d41c](https://github.com/nestoca/joy-generator/commit/8d3d41c97c7d3d68e267b45cdf262003c30bc1c1))
+* **PL-3291:** update direct/indirect vulnerable dependencies ([#71](https://github.com/nestoca/joy-generator/issues/71)) ([a2ce366](https://github.com/nestoca/joy-generator/commit/a2ce3669cad6023e2dd909c9bc3dd29f8f199de3))
+
+
+### Features
+
+* **PL-3378:** remove secrets.GH_TOKEN refs ([96367d3](https://github.com/nestoca/joy-generator/commit/96367d35d24815272d48f7bef8fdc789bcfed332))
+
+
+
 ## [0.18.1](https://github.com/nestoca/joy-generator/compare/v0.18.0...v0.18.1) (2024-11-12)
 
 
