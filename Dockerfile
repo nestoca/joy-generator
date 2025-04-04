@@ -1,4 +1,4 @@
-FROM golang:1.22-alpine AS build
+FROM golang:1.24-alpine AS build
 
 ENV CGO_ENABLED=0 \
   GOOS=linux \
@@ -27,7 +27,7 @@ RUN go build -v -o joy-generator ./cmd/server
 
 FROM alpine:3.18 AS prod
 
-COPY --from=build /etc/passwd /etc/group  /etc/
+COPY --from=build /etc/passwd /etc/group /etc/
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build --chown=golang:root /app/joy-generator /app/
 
