@@ -90,7 +90,7 @@ jobs:
           curl -L https://github.com/mikefarah/yq/releases/download/${{ env.YQ_VERSION }}/yq_linux_amd64.tar.gz | tar xvz
           sudo mv yq_linux_amd64 /usr/local/bin/yq
 
-      - name: NestoCI generate a token
+      - name: Generate a token from the Joy CI Actions App
         if: ${{ ! needs.build-info.outputs.skip-build }}
         id: generate-joy-ci-token
         uses: actions/create-github-app-token@v1
