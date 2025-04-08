@@ -92,16 +92,16 @@ jobs:
 
       - name: NestoCI generate a token
         if: ${{ ! needs.build-info.outputs.skip-build }}
-        id: nestoci-generate-token
+        id: generate-joy-ci-token
         uses: actions/create-github-app-token@v1
         with:
-          app-id: ${{ vars.NESTOCI_APP_ID }}
-          private-key: ${{ secrets.NESTOCI_APP_PRIVATE_KEY }}
+          app-id: ${{ vars.JOY_CI_ACTIONS_APP_ID }}
+          private-key: ${{ secrets.JOY_CI_ACTIONS_APP_PRIVATE_KEY }}
           owner: nestoca
 
       - uses: actions/checkout@v3
         with:
-          token: ${{ steps.nestoci-generate-token.outputs.token }}
+          token: ${{ steps.generate-joy-ci-token.outputs.token }}
           fetch-depth: 0
 
       - name: Set up Docker Buildx
