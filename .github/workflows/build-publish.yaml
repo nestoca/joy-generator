@@ -208,4 +208,4 @@ jobs:
 
       - name: Deploy to GitHub Pages
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
