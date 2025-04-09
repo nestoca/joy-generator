@@ -1,3 +1,12 @@
+## [0.19.1](https://github.com/nestoca/joy-generator/compare/v0.19.0...v0.19.1) (2025-04-09)
+
+
+### Bug Fixes
+
+* use joy-ci-actions github app ([49c85f8](https://github.com/nestoca/joy-generator/commit/49c85f880bd2f1f926184e0a139c4445042044a8))
+
+
+
 # [0.19.0](https://github.com/nestoca/joy-generator/compare/v0.18.1...v0.19.0) (2025-04-04)
 
 
