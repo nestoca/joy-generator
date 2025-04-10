@@ -11,7 +11,7 @@ require (
 	github.com/davidmdm/x/xerr v0.0.3
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-git/go-git/v5 v5.13.0
-	github.com/golang-jwt/jwt/v4 v4.5.1 // indirect; security update
+	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect; security update
 	github.com/nestoca/joy v0.63.1
 	github.com/rs/zerolog v1.33.0
 	github.com/stretchr/testify v1.10.0
