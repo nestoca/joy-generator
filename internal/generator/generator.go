@@ -200,7 +200,10 @@ func (generator *Generator) Run(ctx context.Context) ([]Result, error) {
 			release.Spec.Chart.Name = chart.Name
 			release.Spec.Chart.Version = chart.Version
 
+			ctx, computeSpan := observability.StartTrace(ctx, "compute_release_values")
 			values, err := joy.ComputeReleaseValues(release, chart)
+			computeSpan.End()
+
 			if err != nil {
 				generator.Logger.
 					Error().
