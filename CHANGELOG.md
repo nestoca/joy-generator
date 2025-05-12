@@ -1,3 +1,12 @@
+# [0.20.0](https://github.com/nestoca/joy-generator/compare/v0.19.2...v0.20.0) (2025-05-12)
+
+
+### Features
+
+* **PL-3383:** add trace specifically for ComputeReleaseValues ([9598b11](https://github.com/nestoca/joy-generator/commit/9598b11ae0963100718bee6f4f6b7c0c0728fd92))
+
+
+
 ## [0.19.2](https://github.com/nestoca/joy-generator/compare/v0.19.1...v0.19.2) (2025-04-09)
 
 
