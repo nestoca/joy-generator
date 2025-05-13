@@ -36,6 +36,8 @@ func run() (err error) {
 
 	cfg := GetConfig()
 
+	logger.Info().Msgf("starting in %s with %d concurrency", cfg.Environment, cfg.Generator.Concurrency)
+
 	teardown, err := observability.SetupTracer(observability.TracerOptions{
 		OTLPEndpoint:   cfg.Otel.Address,
 		Environment:    cfg.Environment,
