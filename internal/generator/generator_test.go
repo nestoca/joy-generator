@@ -5,6 +5,7 @@ import (
 	"maps"
 	"testing"
 
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 
 	"github.com/nestoca/joy/api/v1alpha1"
@@ -60,6 +61,7 @@ func TestGenerator(t *testing.T) {
 					Kind:            "Project",
 					ProjectMetadata: v1alpha1.ProjectMetadata{Name: "test"},
 				},
+				File: &joy.YAMLFile{Path: "test"},
 			},
 			DefaultChartRef: "default",
 			Charts:          baseCharts,
@@ -87,6 +89,7 @@ func TestGenerator(t *testing.T) {
 					Kind:            "Project",
 					ProjectMetadata: v1alpha1.ProjectMetadata{Name: "test"},
 				},
+				File: &joy.YAMLFile{Path: "test"},
 			},
 			ExpectedValues: "{}\n",
 		},
@@ -111,6 +114,7 @@ func TestGenerator(t *testing.T) {
 					Kind:            "Project",
 					ProjectMetadata: v1alpha1.ProjectMetadata{Name: "test"},
 				},
+				File: &joy.YAMLFile{Path: "test"},
 			},
 			DefaultChartRef: "custom",
 			Charts: func() map[string]helm.Chart {
@@ -147,6 +151,7 @@ func TestGenerator(t *testing.T) {
 					Kind:            "Project",
 					ProjectMetadata: v1alpha1.ProjectMetadata{Name: "test"},
 				},
+				File: &joy.YAMLFile{Path: "test"},
 			},
 			ExpectedValues: "annotations:\n    test: true\nimage: image@v1\n",
 		},
@@ -156,6 +161,7 @@ func TestGenerator(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			generator := Generator{
 				ChartPuller: &helm.PullRendererMock{},
+				ValueCache:  NewValueCache(nil, zerolog.New(zerolog.Nop())),
 				LoadJoyContext: func(ctx context.Context) (*JoyContext, error) {
 					return &JoyContext{
 						Catalog: BuildCatalogFromRelease(tc.Release),

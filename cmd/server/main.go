@@ -64,7 +64,7 @@ func run() (err error) {
 			Msg("successfully authenticated to helm")
 	}
 
-	repo, err := func() (*github.Repo, error) {
+	repo, err := func() (github.Repository, error) {
 		if !reflect.ValueOf(cfg.Github.App).IsZero() {
 			return cfg.Github.App.NewRepo(cfg.Catalog)
 		}
@@ -74,10 +74,11 @@ func run() (err error) {
 		return fmt.Errorf("failed to create repo: %w", err)
 	}
 
-	logger.Info().Str("catalog_path", repo.Metadata.Path).Msg("initialized repo")
+	logger.Info().Str("catalog_path", repo.GetMetadata().Path).Msg("initialized repo")
 
 	repo = repo.WithLogger(logger)
 
+	valueCache := generator.NewValueCache(repo, logger)
 	server := &http.Server{
 		Addr: cfg.Port,
 		Handler: Handler(HandlerParams{
@@ -86,10 +87,11 @@ func run() (err error) {
 			repo:        repo,
 			generator: &generator.Generator{
 				CacheRoot:      cfg.CacheRoot,
-				LoadJoyContext: generator.RepoLoader(repo),
+				LoadJoyContext: generator.RepoLoader(repo, valueCache),
 				Logger:         logger,
 				ChartPuller:    generator.MakeChartPuller(logger),
 				Concurrency:    cfg.Generator.Concurrency,
+				ValueCache:     valueCache,
 			},
 		}),
 		ReadHeaderTimeout: 5 * time.Second,

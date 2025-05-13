@@ -2,6 +2,12 @@
 
 ArgoCD plugin for expanding joy releases for the ArgoCD ApplicationSet Controller.
 
+## Dev Setup
+
+```bash
+go install github.com/matryer/moq@latest
+```
+
 ## How-to roll-out and test updates
 
 1. Update this repo and merge to master (triggering a build & /release)
