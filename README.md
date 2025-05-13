@@ -20,7 +20,7 @@ ArgoCD plugin for expanding joy releases for the ArgoCD ApplicationSet Controlle
 
 ## Data Flow
 
-ArgoCD's ApplicationSet controller will queries `joy-generator` on Webhooks or schedule. The latter returns a full list of parameters for each application in the catalog. The ApplicationSet controller will then create or update the Application resources in the cluster. See [Argo CD - Generators
+Argo CD's ApplicationSet controller will query `joy-generator` on Webhooks or schedule. The latter returns a full list of parameters for each application in the catalog. The ApplicationSet controller will then create or update the Application resources in the cluster. See [Argo CD - Generators
 Plugin](https://argo-cd.readthedocs.io/en/latest/operator-manual/applicationset/Generators-Plugin/) for more information.
 
 ```mermaid
