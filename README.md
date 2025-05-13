@@ -16,3 +16,30 @@ ArgoCD plugin for expanding joy releases for the ArgoCD ApplicationSet Controlle
 5. Apply the newly released version in `infra`'s component `ArgoCD.configureJoyGenerator()`'s `version` [here](https://github.com/nestoca/infra/blob/c25905374ec678ec21ce468cb00628b572f70838/pulumi/platform/components/ArgoCD.ts#L477)
     1. do `pu main preview-markdown` on `infra/pulumi/platform` as part of your PR/roll-out & merge, as normal
 6. VICTORY! 💪
+
+
+## Data Flow
+
+ArgoCD's ApplicationSet controller will queries `joy-generator` on Webhooks or schedule. The latter returns a full list of parameters for each application in the catalog. The ApplicationSet controller will then create or update the Application resources in the cluster. See [Argo CD - Generators
+Plugin](https://argo-cd.readthedocs.io/en/latest/operator-manual/applicationset/Generators-Plugin/) for more information.
+
+```mermaid
+sequenceDiagram
+    participant user as User
+    participant gh as GitHub
+    participant a as ArgoCD
+    participant jg as Joy Generator
+    participant k8s as Kubernetes
+
+    user->>gh: Merge a PR
+    gh->>a: Webhook
+    a->>jg: Get list parameter values to use as a template
+    jg->>gh: Pull latest commit of master
+    jg->>a: Generate list of parameters for each applications in the catalog
+    a->>k8s: Create or update ApplicationSet
+    a->>k8s: Create or update Application
+    k8s->>a: ApplicationSet created or updated
+    a->>k8s: Sync Applications (if needed)
+    k8s->>a: Applications synced
+
+```
