@@ -28,7 +28,7 @@ func init() {
 type HandlerParams struct {
 	pluginToken string
 	logger      zerolog.Logger
-	repo        *github.Repo
+	repo        github.Repository
 	generator   *generator.Generator
 }
 

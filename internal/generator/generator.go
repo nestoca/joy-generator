@@ -27,6 +27,7 @@ type Generator struct {
 	Logger         zerolog.Logger
 	ChartPuller    helm.Puller
 	Concurrency    int
+	ValueCache     ValueCache
 }
 
 type MutexMap sync.Map
@@ -65,7 +66,7 @@ func (puller ChartPuller) Pull(ctx context.Context, opts helm.PullOptions) error
 	defer mutex.Unlock()
 
 	if entries, err := os.ReadDir(opts.OutputDir); err == nil && len(entries) > 0 {
-		// If output directory exists and has content in it,
+		// If the output directory exists and has content in it,
 		// then it has been pulled by another goroutine: no need to pull the chart
 		return nil
 	} else if err != nil && !errors.Is(err, os.ErrNotExist) {
@@ -102,7 +103,7 @@ type JoyContext struct {
 
 type JoyLoaderFunc func(ctx context.Context) (*JoyContext, error)
 
-func RepoLoader(repo *github.Repo) JoyLoaderFunc {
+func RepoLoader(repo github.Repository, valueCache ValueCache) JoyLoaderFunc {
 	return func(ctx context.Context) (*JoyContext, error) {
 		ctx, span := observability.StartTrace(ctx, "load_joy_context")
 		defer span.End()
@@ -121,6 +122,11 @@ func RepoLoader(repo *github.Repo) JoyLoaderFunc {
 			return nil, fmt.Errorf("loading catalog: %w", err)
 		}
 
+		err = valueCache.CleanupCache()
+		if err != nil {
+			return nil, fmt.Errorf("syncing value cache: %w", err)
+		}
+
 		return &JoyContext{Catalog: cat, Config: cfg}, nil
 	}
 }
@@ -131,20 +137,20 @@ func (generator *Generator) Run(ctx context.Context) ([]Result, error) {
 	ctx, span := observability.StartTrace(ctx, "generator_run")
 	defer span.End()
 
-	joyctx, err := generator.LoadJoyContext(ctx)
+	joyCtx, err := generator.LoadJoyContext(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("loading joy context: %w", err)
 	}
 
-	cache := helm.ChartCache{
+	chartCache := helm.ChartCache{
 		Root:            generator.CacheRoot,
 		Puller:          generator.ChartPuller,
-		Refs:            joyctx.Config.Charts,
-		DefaultChartRef: joyctx.Config.DefaultChartRef,
+		Refs:            joyCtx.Config.Charts,
+		DefaultChartRef: joyCtx.Config.DefaultChartRef,
 	}
 
 	var releases []*v1alpha1.Release
-	for _, cross := range joyctx.Catalog.Releases.Items {
+	for _, cross := range joyCtx.Catalog.Releases.Items {
 		for _, release := range cross.Releases {
 			if release == nil {
 				continue
@@ -154,7 +160,7 @@ func (generator *Generator) Run(ctx context.Context) ([]Result, error) {
 	}
 
 	span.SetAttributes(
-		attribute.Int("release_count", len(joyctx.Catalog.Releases.Items)),
+		attribute.Int("release_count", len(joyCtx.Catalog.Releases.Items)),
 	)
 
 	var (
@@ -181,13 +187,7 @@ func (generator *Generator) Run(ctx context.Context) ([]Result, error) {
 				attribute.String("env", release.Environment.Name),
 			)
 
-			generator.Logger.
-				Debug().
-				Str("release", release.Name).
-				Str("environment", release.Environment.Name).
-				Msg("processing release")
-
-			chart, err := cache.GetReleaseChartFS(ctx, release)
+			chart, err := chartCache.GetReleaseChartFS(ctx, release)
 			if err != nil {
 				generator.Logger.
 					Error().
@@ -201,31 +201,53 @@ func (generator *Generator) Run(ctx context.Context) ([]Result, error) {
 			release.Spec.Chart.Name = chart.Name
 			release.Spec.Chart.Version = chart.Version
 
-			values, err := joy.ComputeReleaseValues(release, chart)
+			cachedValues := generator.ValueCache.Get(release)
+			cacheHit := cachedValues != ""
+			span.SetAttributes(attribute.Bool("cacheHit", cacheHit))
+
+			if !cacheHit {
+				computedValues, err := joy.ComputeReleaseValues(release, chart)
+				if err != nil {
+					generator.Logger.
+						Error().
+						Err(err).
+						Str("release", release.Name).Str("environment", release.Environment.Name).
+						Msgf("error computing values for release %s", release.Name)
+				}
+				marshalledValues, err := yaml.Marshal(computedValues)
+				if err != nil {
+					generator.Logger.
+						Error().
+						Err(err).
+						Str("release", release.Name).Str("environment", release.Environment.Name).
+						Msgf("error marshalling values for release %s", release.Name)
+					return
+				}
+
+				cachedValues = generator.ValueCache.Set(release, string(marshalledValues))
+			}
+
 			if err != nil {
 				generator.Logger.
 					Error().
 					Err(err).
 					Str("release", release.Name).Str("environment", release.Environment.Name).
-					Msgf("error computing values for release %s", release.Name)
+					Msgf("error getting values for release %s", release.Name)
 				return
 			}
 
-			renderedValues, err := yaml.Marshal(values)
-			if err != nil {
-				generator.Logger.
-					Error().
-					Err(err).
-					Str("release", release.Name).Str("environment", release.Environment.Name).
-					Msgf("error marshaling values for release %s", release.Name)
-				return
-			}
+			generator.Logger.
+				Debug().
+				Str("release", release.Name).
+				Str("environment", release.Environment.Name).
+				Bool("cacheHit", cacheHit).
+				Msg("processed release")
 
 			reconciledReleases[i] = Result{
 				Release:     release,
 				Environment: release.Environment,
 				Project:     release.Project,
-				Values:      string(renderedValues),
+				Values:      cachedValues,
 			}
 		}()
 	}

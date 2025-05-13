@@ -12,7 +12,7 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-git/go-git/v5 v5.13.0
 	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect; security update
-	github.com/nestoca/joy v0.63.1
+	github.com/nestoca/joy v0.64.3-0.20250515024813-d79f952d2d66
 	github.com/rs/zerolog v1.33.0
 	github.com/stretchr/testify v1.10.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.53.0
@@ -22,7 +22,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.29.0
 	go.opentelemetry.io/otel/trace v1.29.0
 	golang.org/x/crypto v0.36.0 // indirect; security update
-	golang.org/x/net v0.37.0 // indirect; security update
+	golang.org/x/net v0.38.0 // indirect; security update
 	gopkg.in/yaml.v3 v3.0.1
 )
 

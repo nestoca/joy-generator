@@ -17,6 +17,17 @@ import (
 	"github.com/nestoca/joy-generator/internal/observability"
 )
 
+//go:generate moq -out github_mock.go . Repository
+
+type Repository interface {
+	WithLogger(logger zerolog.Logger) Repository
+	Directory() string
+	Pull(ctx context.Context) error
+	GetHeadSha() (string, error)
+	GetMetadata() RepoMetadata
+	GetFilesChangedSince(sha string) ([]string, error)
+}
+
 type User struct {
 	Name  string
 	Token string
@@ -45,8 +56,12 @@ type Repo struct {
 	logger zerolog.Logger
 }
 
+func (repo *Repo) GetMetadata() RepoMetadata {
+	return repo.Metadata
+}
+
 // WithLogger create a shallow clone of the repo with the new logger set.
-func (repo *Repo) WithLogger(logger zerolog.Logger) *Repo {
+func (repo *Repo) WithLogger(logger zerolog.Logger) Repository {
 	clone := *repo
 	clone.logger = logger
 	return &clone
@@ -58,7 +73,7 @@ type App struct {
 	PrivateKeyPath string
 }
 
-func (app App) NewRepo(metadata RepoMetadata) (*Repo, error) {
+func (app App) NewRepo(metadata RepoMetadata) (Repository, error) {
 	transport, err := ghinstallation.NewKeyFromFile(http.DefaultTransport, app.ID, app.InstallationID, app.PrivateKeyPath)
 	if err != nil {
 		return nil, fmt.Errorf("creating github installation transport: %w", err)
@@ -89,7 +104,7 @@ func (app App) NewRepo(metadata RepoMetadata) (*Repo, error) {
 	return repo, nil
 }
 
-func (user User) NewRepo(metadata RepoMetadata) (*Repo, error) {
+func (user User) NewRepo(metadata RepoMetadata) (Repository, error) {
 	r := &Repo{
 		Metadata: metadata,
 		credentials: func() (*githttp.BasicAuth, error) {
@@ -217,4 +232,48 @@ func (r *Repo) Pull(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func (r *Repo) GetHeadSha() (string, error) {
+	head, err := r.repository.Reference(plumbing.HEAD, true)
+	if err != nil {
+		return "", fmt.Errorf("getting HEAD reference: %w", err)
+	}
+
+	return head.Hash().String(), nil
+}
+
+func (r *Repo) GetFilesChangedSince(sha string) ([]string, error) {
+	head, err := r.repository.Reference(plumbing.HEAD, true)
+	if err != nil {
+		return nil, fmt.Errorf("getting HEAD reference: %w", err)
+	}
+
+	commit, err := r.repository.CommitObject(head.Hash())
+	if err != nil {
+		return nil, fmt.Errorf("getting commit object: %w", err)
+	}
+
+	oldCommit, err := r.repository.CommitObject(plumbing.NewHash(sha))
+	if err != nil {
+		return nil, fmt.Errorf("getting old commit object: %w", err)
+	}
+
+	patch, err := oldCommit.Patch(commit)
+	if err != nil {
+		return nil, fmt.Errorf("getting patch: %w", err)
+	}
+
+	var files []string
+	for _, filePatch := range patch.FilePatches() {
+		from, to := filePatch.Files()
+		if from != nil {
+			files = append(files, from.Path())
+		}
+		if to != nil {
+			files = append(files, to.Path())
+		}
+	}
+
+	return files, nil
 }
