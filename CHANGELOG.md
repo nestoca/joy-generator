@@ -1,3 +1,13 @@
+# [0.21.0](https://github.com/nestoca/joy-generator/compare/v0.20.0...v0.21.0) (2025-05-13)
+
+
+### Features
+
+* **PL-3383:** docs, add data flow seq ([be2d069](https://github.com/nestoca/joy-generator/commit/be2d069505df1b77d0cacf38540ec03d52ca8205))
+* **PL-3383:** tweak traces ([a861f90](https://github.com/nestoca/joy-generator/commit/a861f90b370717b65cb6bb4b44a65f503e6ad8a2))
+
+
+
 # [0.20.0](https://github.com/nestoca/joy-generator/compare/v0.19.2...v0.20.0) (2025-05-12)
 
 
