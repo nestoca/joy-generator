@@ -28,6 +28,7 @@ type Generator struct {
 	ChartPuller    helm.Puller
 	Concurrency    int
 	ValueCache     ValueCache
+	Lock           *sync.Mutex
 }
 
 type MutexMap sync.Map
@@ -136,6 +137,11 @@ func RepoLoader(repo github.Repository, valueCache ValueCache) JoyLoaderFunc {
 func (generator *Generator) Run(ctx context.Context) ([]Result, error) {
 	ctx, span := observability.StartTrace(ctx, "generator_run")
 	defer span.End()
+
+	_, waitSpan := observability.StartTrace(ctx, "waiting_for_lock")
+	generator.Lock.Lock()
+	defer generator.Lock.Unlock()
+	waitSpan.End()
 
 	joyCtx, err := generator.LoadJoyContext(ctx)
 	if err != nil {

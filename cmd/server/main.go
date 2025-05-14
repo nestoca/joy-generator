@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"reflect"
+	"sync"
 	"syscall"
 	"time"
 
@@ -92,6 +93,7 @@ func run() (err error) {
 				ChartPuller:    generator.MakeChartPuller(logger),
 				Concurrency:    cfg.Generator.Concurrency,
 				ValueCache:     valueCache,
+				Lock:           &sync.Mutex{},
 			},
 		}),
 		ReadHeaderTimeout: 5 * time.Second,

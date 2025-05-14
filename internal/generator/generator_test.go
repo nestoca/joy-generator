@@ -3,6 +3,7 @@ package generator
 import (
 	"context"
 	"maps"
+	"sync"
 	"testing"
 
 	"github.com/rs/zerolog"
@@ -173,6 +174,7 @@ func TestGenerator(t *testing.T) {
 						},
 					}, nil
 				},
+				Lock: &sync.Mutex{},
 			}
 
 			results, err := generator.Run(context.Background())
