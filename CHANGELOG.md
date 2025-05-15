@@ -1,3 +1,17 @@
+# [0.22.0](https://github.com/nestoca/joy-generator/compare/v0.21.0...v0.22.0) (2025-05-15)
+
+
+### Features
+
+* **PL-3517:** allow only one concurrent generator run ([7c2d569](https://github.com/nestoca/joy-generator/commit/7c2d569751565f3e33299b8f744043a2804fa752))
+* **PL-3517:** cache rendered values ([526c5a0](https://github.com/nestoca/joy-generator/commit/526c5a0a5c5b8c066407161933bebe1c9e1da822))
+* **PL-3517:** fix integration test ([fd81071](https://github.com/nestoca/joy-generator/commit/fd810715c5a0802a3cb906c1efa8b957e57aedfa))
+* **PL-3517:** formating ([85fc6da](https://github.com/nestoca/joy-generator/commit/85fc6dae610826ab5b9808669434b822eb1f53bc))
+* **PL-3517:** improve smoke test script ([2cedfb6](https://github.com/nestoca/joy-generator/commit/2cedfb695544822e7ba5ea9c1709c6400c4b4c95))
+* **PL-3517:** use joy@v0.65.0 ([4620032](https://github.com/nestoca/joy-generator/commit/4620032f62f651ba48ac6e77042819c84dbdb808))
+
+
+
 # [0.21.0](https://github.com/nestoca/joy-generator/compare/v0.20.0...v0.21.0) (2025-05-13)
 
 
