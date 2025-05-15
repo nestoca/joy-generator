@@ -77,7 +77,11 @@ func TestCleanupCache(t *testing.T) {
 			commitHash = commitHash + "b"
 			for _, file := range tt.cachedFiles {
 				envName := strings.Split(file, "/")[1]
-				cache.Set(&v1alpha1.Release{Environment: &v1alpha1.Environment{EnvironmentMetadata: v1alpha1.EnvironmentMetadata{Name: envName}}, File: &joy.YAMLFile{Path: filepath.Join(repo.Directory(), file)}}, "test")
+				cache.Set(&v1alpha1.Release{
+					Environment: &v1alpha1.Environment{EnvironmentMetadata: v1alpha1.EnvironmentMetadata{Name: envName}},
+					File:        &joy.YAMLFile{Path: filepath.Join(repo.Directory(), file)},
+				},
+					"test")
 			}
 
 			assert.Equal(t, len(tt.cachedFiles), cache.GetSize())
