@@ -65,16 +65,19 @@ func TestGetParamsE2E(t *testing.T) {
 
 	t.Logf("cache dir: %s", cacheDir)
 
+	valueCache := generator.NewValueCache(repo, logger)
 	handler := Handler(HandlerParams{
 		pluginToken: "test-token",
 		logger:      logger,
 		repo:        repo,
 		generator: &generator.Generator{
 			CacheRoot:      cacheDir,
-			LoadJoyContext: generator.RepoLoader(repo, nil),
+			LoadJoyContext: generator.RepoLoader(repo, valueCache),
 			Logger:         logger,
 			ChartPuller:    generator.MakeChartPuller(logger),
 			Concurrency:    4,
+			ValueCache:     valueCache,
+			Lock:           &sync.Mutex{},
 		},
 	})
 
