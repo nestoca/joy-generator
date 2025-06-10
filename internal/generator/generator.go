@@ -87,6 +87,9 @@ type Result struct {
 	// Release holds the release's values loaded from the yaml file in the catalog
 	Release *v1alpha1.Release `json:"release"`
 
+	// Links assoicated with the release. Built using joy's internal logic resolving project, environment and release links.
+	Links map[string]string `json:"links"`
+
 	// Environment holds the environment info where the release will be deployed. The full spec is not loaded to minimize the payload size
 	Environment *v1alpha1.Environment `json:"environment"`
 
@@ -148,7 +151,9 @@ func (generator *Generator) Run(ctx context.Context) ([]Result, error) {
 		return nil, fmt.Errorf("loading joy context: %w", err)
 	}
 
-	chartCache := helm.ChartCache{
+	linkProvider := joy.NewLinksProvider(*joyCtx.Config)
+
+	cache := helm.ChartCache{
 		Root:            generator.CacheRoot,
 		Puller:          generator.ChartPuller,
 		Refs:            joyCtx.Config.Charts,
@@ -193,7 +198,7 @@ func (generator *Generator) Run(ctx context.Context) ([]Result, error) {
 				attribute.String("env", release.Environment.Name),
 			)
 
-			chart, err := chartCache.GetReleaseChartFS(ctx, release)
+			chart, err := cache.GetReleaseChartFS(ctx, release)
 			if err != nil {
 				generator.Logger.
 					Error().
@@ -233,15 +238,6 @@ func (generator *Generator) Run(ctx context.Context) ([]Result, error) {
 				cachedValues = generator.ValueCache.Set(release, string(marshalledValues))
 			}
 
-			if err != nil {
-				generator.Logger.
-					Error().
-					Err(err).
-					Str("release", release.Name).Str("environment", release.Environment.Name).
-					Msgf("error getting values for release %s", release.Name)
-				return
-			}
-
 			generator.Logger.
 				Debug().
 				Str("release", release.Name).
@@ -249,11 +245,24 @@ func (generator *Generator) Run(ctx context.Context) ([]Result, error) {
 				Bool("cacheHit", cacheHit).
 				Msg("processed release")
 
+			links, err := linkProvider.GetReleaseLinks(release)
+			if err != nil {
+				generator.Logger.
+					Error().
+					Err(err).
+					Str("release", release.Name).Str("environment", release.Environment.Name).
+					Msgf("error computing values for release %s", release.Name)
+				//
+				// Do not return! It is not worth omitting the release if we fail to generate the links.
+				// Links are a QoL addition within argocd but should not affect the deployment of the release itself.
+			}
+
 			reconciledReleases[i] = Result{
 				Release:     release,
 				Environment: release.Environment,
 				Project:     release.Project,
 				Values:      cachedValues,
+				Links:       links,
 			}
 		}()
 	}
