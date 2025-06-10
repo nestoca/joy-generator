@@ -1,3 +1,12 @@
+# [0.23.0](https://github.com/nestoca/joy-generator/compare/v0.22.0...v0.23.0) (2025-06-10)
+
+
+### Features
+
+* **PL-3613:** expose links in generator result ([04bcd51](https://github.com/nestoca/joy-generator/commit/04bcd51e52d5c6a58b7eff3c9904464721e3f292))
+
+
+
 # [0.22.0](https://github.com/nestoca/joy-generator/compare/v0.21.0...v0.22.0) (2025-05-15)
 
 
