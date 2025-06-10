@@ -108,6 +108,7 @@ func TestGetParamsE2E(t *testing.T) {
 		require.NotEmpty(t, chart["version"])
 		require.NotEmpty(t, chart["repoUrl"])
 		require.NotEmpty(t, chart["name"])
+		require.NotEmpty(t, result.Links)
 	}
 
 	require.Greater(t, len(logs.Records), 0)
