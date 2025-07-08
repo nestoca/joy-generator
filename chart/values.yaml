@@ -37,6 +37,7 @@ image:
 
 probes:
   timeoutSeconds: 1
+  periodSeconds: 10
 
 imagePullSecrets: []
 nameOverride: ''
