@@ -1,3 +1,12 @@
+## [0.23.1](https://github.com/nestoca/joy-generator/compare/v0.23.0...v0.23.1) (2025-07-08)
+
+
+### Bug Fixes
+
+* **PL-3723:** extend chart to support configuring period seconds ([bfe3166](https://github.com/nestoca/joy-generator/commit/bfe316612e08e5995add3029a50e38488a4ffce7))
+
+
+
 # [0.23.0](https://github.com/nestoca/joy-generator/compare/v0.22.0...v0.23.0) (2025-06-10)
 
 
