@@ -110,11 +110,13 @@ spec:
             httpGet:
               path: /api/v1/health
               port: http
+            periodSeconds: 10
             timeoutSeconds: 1
           readinessProbe:
             httpGet:
               path: /api/v1/readiness
               port: http
+            periodSeconds: 10
             timeoutSeconds: 1
           resources:
             {}
