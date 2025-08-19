@@ -31,7 +31,7 @@ COPY --from=build /etc/passwd /etc/group /etc/
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build --chown=golang:root /app/joy-generator /app/
 
-RUN apk add helm
+RUN wget https://get.helm.sh/helm-v3.18.5-linux-amd64.tar.gz -qO - | tar -xz && mv linux-amd64/helm /usr/local/bin
 
 RUN mkdir -p /home/golang && chown -R golang:root /home/golang
 
