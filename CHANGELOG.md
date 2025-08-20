@@ -1,3 +1,12 @@
+# [0.26.0](https://github.com/nestoca/joy-generator/compare/v0.25.0...v0.26.0) (2025-08-20)
+
+
+### Features
+
+* **PL-3843:** install helm with checksum verification ([f89bcbc](https://github.com/nestoca/joy-generator/commit/f89bcbc663b410352dd0684b847d7fab6c289fcb))
+
+
+
 # [0.25.0](https://github.com/nestoca/joy-generator/compare/v0.24.0...v0.25.0) (2025-08-20)
 
 
