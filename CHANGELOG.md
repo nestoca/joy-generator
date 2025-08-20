@@ -1,3 +1,12 @@
+# [0.25.0](https://github.com/nestoca/joy-generator/compare/v0.24.0...v0.25.0) (2025-08-20)
+
+
+### Features
+
+* **PL-3843:** update helm to 3.18.5 ([b8eaacb](https://github.com/nestoca/joy-generator/commit/b8eaacb7d77c4c6b15980bb6639596c3955e9dc8))
+
+
+
 # [0.24.0](https://github.com/nestoca/joy-generator/compare/v0.23.1...v0.24.0) (2025-08-05)
 
 
