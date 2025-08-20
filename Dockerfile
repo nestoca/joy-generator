@@ -31,7 +31,12 @@ COPY --from=build /etc/passwd /etc/group /etc/
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build --chown=golang:root /app/joy-generator /app/
 
-RUN wget https://get.helm.sh/helm-v3.18.5-linux-amd64.tar.gz -qO - | tar -xz && mv linux-amd64/helm /usr/local/bin
+RUN \
+  apk add perl-utils && \
+  wget https://get.helm.sh/helm-v3.18.5-linux-amd64.tar.gz -q && \
+  echo "9879bf9c471cdecbbee5ee17cf1de1849b0ffd12871ea01f17ede6861d7134f5  helm-v3.18.5-linux-amd64.tar.gz" | shasum -a256 --check - && \
+  tar -xzf helm-v3.18.5-linux-amd64.tar.gz && \
+  mv linux-amd64/helm /usr/local/bin
 
 RUN mkdir -p /home/golang && chown -R golang:root /home/golang
 
