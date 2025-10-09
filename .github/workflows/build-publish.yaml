@@ -41,9 +41,17 @@ jobs:
   test-internal:
     runs-on: ubuntu-24.04
     steps:
+      - name: Generate a token from the Joy CI Actions App
+        id: generate-joy-ci-triggerer-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.JOY_CI_ACTIONS_TRIGGERER_APP_ID }}
+          private-key: ${{ secrets.JOY_CI_ACTIONS_TRIGGERER_APP_PRIVATE_KEY }}
+          owner: nestoca
+          repositories: catalog
       - name: Dispatch workflow
         env:
-          GH_TOKEN: ${{ secrets.CATALOG_TRIGGER_TOKEN }}
+          GH_TOKEN: ${{ steps.generate-joy-ci-triggerer-token.outputs.token }}
         run: |
           gh workflow run --repo github.com/nestoca/catalog -f ref=${{ github.head_ref }} .github/workflows/joy-generator-test.yaml
           sleep 5s
