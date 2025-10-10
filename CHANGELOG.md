@@ -1,3 +1,12 @@
+# [0.28.0](https://github.com/nestoca/joy-generator/compare/v0.27.0...v0.28.0) (2025-10-10)
+
+
+### Features
+
+* **PL-3398:** test, do not rely on GCP credentials being passed ([6b76099](https://github.com/nestoca/joy-generator/commit/6b76099dc7eeaaf93225771202ed92d0878b88e0))
+
+
+
 # [0.27.0](https://github.com/nestoca/joy-generator/compare/v0.26.0...v0.27.0) (2025-10-09)
 
 
