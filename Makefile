@@ -5,3 +5,11 @@ kind-build:
 
 fmt:
 	goimports --local github.com/nestoca/joy-generator -w .
+
+test:
+	@INTERNAL_TESTING=true \
+	CATALOG_URL=https://github.com/nestoca/catalog \
+	GH_USER=nestobot \
+	GH_TOKEN=$(shell gh auth token) \
+	REGISTRY=northamerica-northeast1-docker.pkg.dev \
+	go test ./... -p 1 -v -race

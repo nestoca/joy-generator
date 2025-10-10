@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -29,14 +28,12 @@ func TestGetParamsE2E(t *testing.T) {
 	}
 
 	var (
-		user        github.User
-		catalog     github.RepoMetadata
-		registry    string
-		credentials []byte
+		user     github.User
+		catalog  github.RepoMetadata
+		registry string
 	)
 
 	conf.Var(conf.Environ, &registry, "REGISTRY", conf.Required[string](true))
-	conf.Var(conf.Environ, &credentials, "CREDENTIALS", conf.Required[[]byte](true))
 	conf.Var(conf.Environ, &catalog.Path, "CATALOG_PATH", conf.Default(filepath.Join(os.TempDir(), "catalog")))
 	conf.Var(conf.Environ, &catalog.URL, "CATALOG_URL", conf.Required[string](true))
 	conf.Var(conf.Environ, &catalog.TargetRevision, "CATALOG_REVISION", conf.Default("master"))
@@ -44,8 +41,6 @@ func TestGetParamsE2E(t *testing.T) {
 	conf.Var(conf.Environ, &user.Token, "GH_TOKEN", conf.Required[string](true))
 
 	require.NoError(t, conf.Environ.Parse())
-
-	require.NoError(t, AuthenticateHelm(context.Background(), registry, credentials))
 
 	require.NoError(t, os.RemoveAll(catalog.Path))
 
