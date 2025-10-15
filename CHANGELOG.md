@@ -1,3 +1,12 @@
+# [0.29.0](https://github.com/nestoca/joy-generator/compare/v0.28.0...v0.29.0) (2025-10-15)
+
+
+### Features
+
+* **PL-4041:** upgrade to joy v0.70.0 ([52c3f4f](https://github.com/nestoca/joy-generator/commit/52c3f4fc9ee106653f5fe488e223d638a223df7f))
+
+
+
 # [0.28.0](https://github.com/nestoca/joy-generator/compare/v0.27.0...v0.28.0) (2025-10-10)
 
 
