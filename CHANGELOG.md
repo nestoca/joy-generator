@@ -1,3 +1,12 @@
+## [0.29.1](https://github.com/nestoca/joy-generator/compare/v0.29.0...v0.29.1) (2025-11-12)
+
+
+### Bug Fixes
+
+* **PL-4072:** update x/crypto ([#94](https://github.com/nestoca/joy-generator/issues/94)) ([07d2202](https://github.com/nestoca/joy-generator/commit/07d22025a2198e546626256dc052ae4fd0cbee8b))
+
+
+
 # [0.29.0](https://github.com/nestoca/joy-generator/compare/v0.28.0...v0.29.0) (2025-10-15)
 
 
