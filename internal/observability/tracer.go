@@ -2,6 +2,7 @@ package observability
 
 import (
 	"context"
+	"time"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -9,10 +10,9 @@ import (
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/sdk/resource"
 	"go.opentelemetry.io/otel/sdk/trace"
-	"go.opentelemetry.io/otel/trace/noop"
-
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	oteltrace "go.opentelemetry.io/otel/trace"
+	"go.opentelemetry.io/otel/trace/noop"
 )
 
 type TracerOptions struct {
@@ -33,6 +33,12 @@ func SetupTracer(opts TracerOptions) (func() error, error) {
 	otlpClient := otlptracegrpc.NewClient(
 		otlptracegrpc.WithInsecure(),
 		otlptracegrpc.WithEndpoint(opts.OTLPEndpoint),
+		otlptracegrpc.WithRetry(otlptracegrpc.RetryConfig{
+			Enabled:         true,
+			InitialInterval: 5 * time.Second,
+			MaxInterval:     15 * time.Second,
+			MaxElapsedTime:  90 * time.Second,
+		}),
 	)
 
 	exporter, err := otlptrace.New(context.Background(), otlpClient)
