@@ -1,3 +1,12 @@
+# [0.30.0](https://github.com/nestoca/joy-generator/compare/v0.29.1...v0.30.0) (2025-12-08)
+
+
+### Features
+
+* **PL-4281:** enable Otel retry ([#95](https://github.com/nestoca/joy-generator/issues/95)) ([3bb5bfa](https://github.com/nestoca/joy-generator/commit/3bb5bfa27e13d7165396987cada6d33af68037ae))
+
+
+
 ## [0.29.1](https://github.com/nestoca/joy-generator/compare/v0.29.0...v0.29.1) (2025-11-12)
 
 
