@@ -124,7 +124,7 @@ jobs:
 
       - name: Generate changelog and tag release
         id: changelog
-        uses: TriPSs/conventional-changelog-action@v4
+        uses: nestoca/conventional-changelog-action@releases/v5
         with:
           input-file: CHANGELOG.md
           output-file: CHANGELOG.md
