@@ -1,3 +1,13 @@
+# [0.31.0](https://github.com/nestoca/joy-generator/compare/v0.30.0...v0.31.0) (2026-03-27)
+
+
+### Features
+
+* **PL-5209:** pin external action ([7580491](https://github.com/nestoca/joy-generator/commit/758049199a243f3505036a858534013716189575))
+* **PL-5209:** pin external action ([27621fc](https://github.com/nestoca/joy-generator/commit/27621fcbcf3c72b1119d7aefcad0b3adaff815f3))
+
+
+
 # [0.30.0](https://github.com/nestoca/joy-generator/compare/v0.29.1...v0.30.0) (2025-12-08)
 
 
