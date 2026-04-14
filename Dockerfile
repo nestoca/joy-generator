@@ -25,7 +25,7 @@ COPY --chown=golang:root internal ./internal
 
 RUN go build -v -o joy-generator ./cmd/server
 
-FROM alpine:3.18 AS prod
+FROM alpine:3.23 AS prod
 
 COPY --from=build /etc/passwd /etc/group /etc/
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
