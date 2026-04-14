@@ -1,3 +1,12 @@
+## [0.31.1](https://github.com/nestoca/joy-generator/compare/v0.31.0...v0.31.1) (2026-04-14)
+
+
+### Bug Fixes
+
+* **PL-5360:** add LOG_LEVEL env var to configure log level ([e736965](https://github.com/nestoca/joy-generator/commit/e736965878551fa7069b1ecfc789a76789ca3ee3))
+
+
+
 # [0.31.0](https://github.com/nestoca/joy-generator/compare/v0.30.0...v0.31.0) (2026-03-27)
 
 
