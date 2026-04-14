@@ -23,7 +23,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 )
 
-require google.golang.org/grpc v1.79.1
+require google.golang.org/grpc v1.79.3
 
 require (
 	cuelang.org/go v0.15.4 // indirect
