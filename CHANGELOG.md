@@ -1,3 +1,14 @@
+## [0.31.2](https://github.com/nestoca/joy-generator/compare/v0.31.1...v0.31.2) (2026-04-14)
+
+
+### Bug Fixes
+
+* **deps:** update go.opentelemetry.io/otel dependencies to v1.41.0 ([408899b](https://github.com/nestoca/joy-generator/commit/408899bb44adb6dca3b88bad0b17fdd893c14452))
+* **deps:** update module github.com/nestoca/joy to v0.85.0 ([1ad8d9d](https://github.com/nestoca/joy-generator/commit/1ad8d9d55a7d263473055eb42282ce85531806ea))
+* update Dockerfile to use golang:1.26-alpine to match go.mod requirement ([3a08950](https://github.com/nestoca/joy-generator/commit/3a08950b3dcf4107c5558d1df7804db35f8ff735))
+
+
+
 ## [0.31.1](https://github.com/nestoca/joy-generator/compare/v0.31.0...v0.31.1) (2026-04-14)
 
 
