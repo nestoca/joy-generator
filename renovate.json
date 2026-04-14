@@ -14,6 +14,14 @@
       "matchPackagePatterns": ["^github\\.com/nestoca/joy$"],
       "matchUpdateTypes": ["major", "minor"],
       "enabled": true
+    },
+    {
+      "matchManagers": ["dockerfile"],
+      "enabled": true
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "enabled": true
     }
   ]
 }
