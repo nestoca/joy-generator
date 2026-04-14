@@ -15,6 +15,7 @@ type Config struct {
 	Port        string
 	GracePeriod time.Duration
 	Environment string
+	LogLevel    string
 
 	PluginToken string
 
@@ -53,6 +54,7 @@ func GetConfig() Config {
 	}
 
 	conf.Var(conf.Environ, &cfg.CacheRoot, "CACHE_ROOT", conf.Default(filepath.Join(home, ".cache", "joy")))
+	conf.Var(conf.Environ, &cfg.LogLevel, "LOG_LEVEL", conf.Default("info"))
 	conf.Var(conf.Environ, &cfg.Port, "PORT", conf.Default(":8080"))
 	conf.Var(conf.Environ, &cfg.Environment, "ENVIRONMENT", conf.Default("local"))
 	conf.Var(conf.Environ, &cfg.GracePeriod, "GRACE_PERIOD", conf.Default(10*time.Second))

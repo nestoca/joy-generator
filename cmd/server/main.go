@@ -33,9 +33,14 @@ func main() {
 }
 
 func run() (err error) {
-	logger := zerolog.New(os.Stdout)
-
 	cfg := GetConfig()
+
+	level, err := zerolog.ParseLevel(cfg.LogLevel)
+	if err != nil {
+		return fmt.Errorf("invalid LOG_LEVEL %q: %w", cfg.LogLevel, err)
+	}
+
+	logger := zerolog.New(os.Stdout).Level(level)
 
 	logger.Info().Msgf("starting in %s with %d concurrency", cfg.Environment, cfg.Generator.Concurrency)
 
