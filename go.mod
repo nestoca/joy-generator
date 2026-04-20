@@ -8,7 +8,7 @@ require (
 	github.com/davidmdm/x/xcontext v0.0.3
 	github.com/davidmdm/x/xerr v0.0.6
 	github.com/gin-gonic/gin v1.10.0
-	github.com/go-git/go-git/v5 v5.17.1
+	github.com/go-git/go-git/v5 v5.18.0
 	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect; security update
 	github.com/nestoca/joy v0.85.0
 	github.com/rs/zerolog v1.33.0
