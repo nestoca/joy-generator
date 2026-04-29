@@ -2,12 +2,12 @@ name: Build & Publish
 
 on:
   push:
-    branches: ["master"]
+    branches: ['master']
     paths-ignore:
-      - "chart/Chart.yaml"
-      - "CHANGELOG.md"
+      - 'chart/Chart.yaml'
+      - 'CHANGELOG.md'
   pull_request:
-    branches: ["master"]
+    branches: ['master']
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -84,7 +84,6 @@ jobs:
       packages: write
       contents: write
       id-token: write
-      pages: write
     env:
       HELM_VERSION: v3.12.2
       YQ_VERSION: v4.34.2
@@ -99,7 +98,6 @@ jobs:
           sudo mv yq_linux_amd64 /usr/local/bin/yq
 
       - name: Generate a token from the Joy CI Actions App
-        if: ${{ ! needs.build-info.outputs.skip-build }}
         id: generate-joy-ci-token
         uses: actions/create-github-app-token@v1
         with:
@@ -115,6 +113,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      # Authenticates both Docker image pushes and helm OCI chart pushes to ghcr.io
       - name: Log in to the Container registry
         uses: docker/login-action@v2.1.0
         with:
@@ -168,33 +167,13 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Package chart release
+      - name: Package and push chart to OCI registry
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
-        id: chart-release
         run: |
-          ORG_NAME=${GITHUB_REPOSITORY%%/*}
-          REPO_NAME=${GITHUB_REPOSITORY#*/}
-
-          CHART_NAME=$(yq .name ${{ github.workspace }}/chart/Chart.yaml)
-
-          mkdir -p ${{ runner.temp }}/helm-release
-
-          cd ${{ runner.temp }}/helm-release
-
-          # Try to get the current index.yaml of the helm repo from https://${ORG_NAME}.github.io/${REPO_NAME}/index.yaml
-          # If it fails, create a new index.yaml
-          curl -f -L https://${ORG_NAME}.github.io/${REPO_NAME}/index.yaml -o index.yaml || echo -e "apiVersion: v1\nentries: {}" > index.yaml
-
           helm package ${{ github.workspace }}/chart
-          helm repo index --url https://github.com/${{ github.repository }}/releases/download/${{ steps.changelog.outputs.tag }} --merge index.yaml .
-
-          echo "artifact-path=${{ runner.temp }}/helm-release/${CHART_NAME}-${{ steps.changelog.outputs.version }}.tgz" >> $GITHUB_OUTPUT
-
-      - name: Upload pages artifact
-        if: ${{ steps.changelog.outputs.skipped == 'false' }}
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ${{ runner.temp }}/helm-release
+          # helm appends the chart name to the registry URL, publishing to oci://ghcr.io/nestoca/joy-generator
+          # https://helm.sh/docs/topics/registries/#the-push-subcommand
+          helm push *.tgz oci://ghcr.io/nestoca
 
       - name: Push changes
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
@@ -207,13 +186,7 @@ jobs:
         with:
           allowUpdates: true
           draft: false
-          artifactErrorsFailBuild: true
           name: ${{ steps.changelog.outputs.tag }}
           tag: ${{ steps.changelog.outputs.tag }}
           body: ${{ steps.changelog.outputs.clean_changelog }}
           token: ${{ github.token }}
-          artifacts: ${{ steps.chart-release.outputs.artifact-path }}
-
-      - name: Deploy to GitHub Pages
-        if: ${{ steps.changelog.outputs.skipped == 'false' }}
-        uses: actions/deploy-pages@v4
