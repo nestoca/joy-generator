@@ -171,7 +171,7 @@ jobs:
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
         run: |
           helm package ${{ github.workspace }}/chart
-          # helm appends the chart name to the registry URL, publishing to oci://ghcr.io/nestoca/joy-generator
+          # helm appends the chart name to the registry URL, publishing to oci://ghcr.io/nestoca/joy-generator-chart
           # https://helm.sh/docs/topics/registries/#the-push-subcommand
           helm push *.tgz oci://ghcr.io/nestoca
 

@@ -1,134 +1,129 @@
 ---
-# Source: joy-generator/templates/argocd-config.yaml
+# Source: joy-generator-chart/templates/argocd-config.yaml
 apiVersion: v1
+data:
+  baseUrl: http://my-release-joy-generator-chart
+  requestTimeout: "30"
+  token: $my-release-joy-generator-chart-config:PLUGIN_TOKEN
 kind: ConfigMap
 metadata:
-  name: my-release-joy-generator-config
-data:
-  token: "$my-release-joy-generator-config:PLUGIN_TOKEN"
-  baseUrl: "http://my-release-joy-generator"
-  requestTimeout: "30"
+  name: my-release-joy-generator-chart-config
 ---
-# Source: joy-generator/templates/service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: my-release-joy-generator
-  labels:
-    helm.sh/chart: joy-generator-1.0.0
-    app.kubernetes.io/name: joy-generator
-    app.kubernetes.io/instance: my-release
-    app.kubernetes.io/version: "1.0.0"
-    app.kubernetes.io/managed-by: Helm
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: http
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/name: joy-generator
-    app.kubernetes.io/instance: my-release
----
-# Source: joy-generator/templates/deployment.yaml
+# Source: joy-generator-chart/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-release-joy-generator
   labels:
-    helm.sh/chart: joy-generator-1.0.0
-    app.kubernetes.io/name: joy-generator
     app.kubernetes.io/instance: my-release
-    app.kubernetes.io/version: "1.0.0"
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: joy-generator-chart
+    app.kubernetes.io/version: 1.0.0
+    helm.sh/chart: joy-generator-chart-1.0.0
+  name: my-release-joy-generator-chart
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: joy-generator
       app.kubernetes.io/instance: my-release
+      app.kubernetes.io/name: joy-generator-chart
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: joy-generator
         app.kubernetes.io/instance: my-release
+        app.kubernetes.io/name: joy-generator-chart
     spec:
-      securityContext:
-        {}
-      volumes:
-        - name: catalog-dir
-          emptyDir: {}
-        - name: github-app-private-key
-          secret:
-            secretName: my-release-joy-generator-github-app-key
       containers:
-        - name: joy-generator
-          securityContext:
-            {}
-          image: "ghcr.io/nestoca/joy-generator:0.1.2"
-          imagePullPolicy: IfNotPresent
-          volumeMounts:
-            - mountPath: /tmp/catalog
-              name: catalog-dir
-            - mountPath: /etc/joy/config
-              name: github-app-private-key
-          env:
+        - env:
             - name: CATALOG_DIR
-              value: "/tmp/catalog"
+              value: /tmp/catalog
             - name: CATALOG_URL
-              value: "https://github.com/example/foobar.git"
+              value: https://github.com/example/foobar.git
             - name: GH_APP_ID
               value: "123456"
             - name: GH_APP_INSTALLATION_ID
               value: "789101112"
             - name: GRACE_PERIOD
-              value: "10s"
+              value: 10s
             - name: PORT
-              value: ":8080"
+              value: :8080
             - name: GH_APP_PRIVATE_KEY_PATH
               value: /etc/joy/config/githubApp.pem
           envFrom:
             - secretRef:
-                name: my-release-joy-generator-config
-          ports:
-            - name: http
-              containerPort: 8080
-              protocol: TCP
+                name: my-release-joy-generator-chart-config
+          image: ghcr.io/nestoca/joy-generator:0.1.2
+          imagePullPolicy: IfNotPresent
           livenessProbe:
             httpGet:
               path: /api/v1/health
               port: http
             periodSeconds: 10
             timeoutSeconds: 1
+          name: joy-generator-chart
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
           readinessProbe:
             httpGet:
               path: /api/v1/readiness
               port: http
             periodSeconds: 10
             timeoutSeconds: 1
-          resources:
-            {}
+          resources: {}
+          securityContext: {}
+          volumeMounts:
+            - mountPath: /tmp/catalog
+              name: catalog-dir
+            - mountPath: /etc/joy/config
+              name: github-app-private-key
+      securityContext: {}
+      volumes:
+        - emptyDir: {}
+          name: catalog-dir
+        - name: github-app-private-key
+          secret:
+            secretName: my-release-joy-generator-chart-github-app-key
 ---
-# Source: joy-generator/templates/secret.yaml
+# Source: joy-generator-chart/templates/secret.yaml
 apiVersion: bitnami.com/v1alpha1
 kind: SealedSecret
 metadata:
-  name: my-release-joy-generator-config
   annotations:
     sealedsecrets.bitnami.com/cluster-wide: "true"
+  name: my-release-joy-generator-chart-config
 spec:
   encryptedData:
     PLUGIN_TOKEN: '@very!l0ngands3curet0ken'
 ---
-# Source: joy-generator/templates/secret.yaml
 apiVersion: bitnami.com/v1alpha1
 kind: SealedSecret
 metadata:
-  name: my-release-joy-generator-github-app-key
   annotations:
     sealedsecrets.bitnami.com/cluster-wide: "true"
+  name: my-release-joy-generator-chart-github-app-key
 spec:
   encryptedData:
-    githubApp.pem: |
-      FOOBARLOREMISPUM
+    githubApp.pem: FOOBARLOREMISPUM
+---
+# Source: joy-generator-chart/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: joy-generator-chart
+    app.kubernetes.io/version: 1.0.0
+    helm.sh/chart: joy-generator-chart-1.0.0
+  name: my-release-joy-generator-chart
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: http
+  selector:
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/name: joy-generator-chart
+  type: ClusterIP
