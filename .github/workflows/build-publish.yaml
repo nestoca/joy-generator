@@ -178,6 +178,11 @@ jobs:
       - name: Push changes
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
         run: |
+          cat <<EOF >~/.gitconfig
+          [url "https://${{ vars.JOY_CI_ACTIONS_TRIGGERER_APP_ID }}:${{ steps.generate-joy-ci-token.outputs.token }}@github.com/"]
+                  insteadOf = https://github.com/
+          EOF
+
           git push origin master --follow-tags
 
       - name: Create Release
