@@ -1,3 +1,12 @@
+## [0.32.2](https://github.com/nestoca/joy-generator/compare/v0.32.1...v0.32.2) (2026-05-07)
+
+
+### Bug Fixes
+
+* **PL-5618:** ugprade joy ([42633e8](https://github.com/nestoca/joy-generator/commit/42633e818792634a315d286d0944d0bdb49bdebf))
+
+
+
 ## [0.31.2](https://github.com/nestoca/joy-generator/compare/v0.31.1...v0.31.2) (2026-04-14)
 
 
