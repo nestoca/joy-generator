@@ -62,7 +62,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v4
       - uses: actions/checkout@v3
       - name: Build Docker image
         uses: docker/build-push-action@v3.2.0
@@ -111,7 +111,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v4
 
       # Authenticates both Docker image pushes and helm OCI chart pushes to ghcr.io
       - name: Log in to the Container registry
