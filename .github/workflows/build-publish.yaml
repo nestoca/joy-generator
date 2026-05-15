@@ -43,7 +43,7 @@ jobs:
     steps:
       - name: Generate a token from the Joy CI Actions App
         id: generate-joy-ci-triggerer-token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ vars.JOY_CI_ACTIONS_TRIGGERER_APP_ID }}
           private-key: ${{ secrets.JOY_CI_ACTIONS_TRIGGERER_APP_PRIVATE_KEY }}
@@ -99,7 +99,7 @@ jobs:
 
       - name: Generate a token from the Joy CI Actions App
         id: generate-joy-ci-token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ vars.JOY_CI_ACTIONS_APP_ID }}
           private-key: ${{ secrets.JOY_CI_ACTIONS_APP_PRIVATE_KEY }}
