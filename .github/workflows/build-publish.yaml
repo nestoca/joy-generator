@@ -52,8 +52,9 @@ jobs:
       - name: Dispatch workflow
         env:
           GH_TOKEN: ${{ steps.generate-joy-ci-triggerer-token.outputs.token }}
+          HEAD_REF: ${{ github.head_ref }}
         run: |
-          gh workflow run --repo github.com/nestoca/catalog -f ref=${{ github.head_ref }} .github/workflows/joy-generator-test.yaml
+          gh workflow run --repo github.com/nestoca/catalog -f ref="$HEAD_REF" .github/workflows/joy-generator-test.yaml
           sleep 5s
           workflowId=$(gh run ls --repo github.com/nestoca/catalog --workflow joy-generator-test --json databaseId -q '.[0].databaseId')
           gh run watch --exit-status --repo github.com/nestoca/catalog $workflowId
@@ -123,7 +124,7 @@ jobs:
 
       - name: Generate changelog and tag release
         id: changelog
-        uses: nestoca/conventional-changelog-action@releases/v5
+        uses: nestoca/conventional-changelog-action@633dae602dcd3203777969e935995deb7d9d832f # releases/v5
         with:
           input-file: CHANGELOG.md
           output-file: CHANGELOG.md
