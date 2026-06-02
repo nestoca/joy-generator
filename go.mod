@@ -1,6 +1,6 @@
 module github.com/nestoca/joy-generator
 
-go 1.26.0
+go 1.26.3
 
 require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.11.0
