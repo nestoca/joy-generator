@@ -1,3 +1,12 @@
+## [0.32.7](https://github.com/nestoca/joy-generator/compare/v0.32.6...v0.32.7) (2026-06-03)
+
+
+### Bug Fixes
+
+* **deps:** bump go.opentelemetry.io/otel to v1.44.0 [PL-4589, PL-5947, PL-5948] ([#126](https://github.com/nestoca/joy-generator/issues/126)) ([f03be53](https://github.com/nestoca/joy-generator/commit/f03be53a19622bde368b68bf2dfea20d5007a1b3))
+
+
+
 ## [0.32.2](https://github.com/nestoca/joy-generator/compare/v0.32.1...v0.32.2) (2026-05-07)
 
 
