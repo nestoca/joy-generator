@@ -1,3 +1,12 @@
+## [0.32.8](https://github.com/nestoca/joy-generator/compare/v0.32.7...v0.32.8) (2026-06-08)
+
+
+### Bug Fixes
+
+* **PL-6101:** use upstream TriPSs/conventional-changelog-action ([c22a4a2](https://github.com/nestoca/joy-generator/commit/c22a4a2f2fd318fcb6cf9590a96dbc45bb54a2be))
+
+
+
 ## [0.32.7](https://github.com/nestoca/joy-generator/compare/v0.32.6...v0.32.7) (2026-06-03)
 
 
