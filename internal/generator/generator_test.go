@@ -8,6 +8,7 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/nestoca/joy/api/v1alpha1"
 	joy "github.com/nestoca/joy/pkg"
@@ -42,7 +43,7 @@ func TestGenerator(t *testing.T) {
 			Release: &v1alpha1.Release{
 				ApiVersion:      "joy.nesto.ca/v1alpha1",
 				Kind:            "Release",
-				ReleaseMetadata: v1alpha1.ReleaseMetadata{Name: "app"},
+				ReleaseMetadata: v1alpha1.ReleaseMetadata{ObjectMeta: metav1.ObjectMeta{Name: "app"}},
 				Spec: v1alpha1.ReleaseSpec{
 					Version: "v1",
 					Chart: v1alpha1.ReleaseChart{
@@ -55,12 +56,12 @@ func TestGenerator(t *testing.T) {
 				Environment: &v1alpha1.Environment{
 					ApiVersion:          "joy.nesto.ca/v1alpha1",
 					Kind:                "Environment",
-					EnvironmentMetadata: v1alpha1.EnvironmentMetadata{Name: "test"},
+					EnvironmentMetadata: v1alpha1.EnvironmentMetadata{ObjectMeta: metav1.ObjectMeta{Name: "test"}},
 				},
 				Project: &v1alpha1.Project{
 					ApiVersion:      "joy.nesto.ca/v1alpha1",
 					Kind:            "Project",
-					ProjectMetadata: v1alpha1.ProjectMetadata{Name: "test"},
+					ProjectMetadata: v1alpha1.ProjectMetadata{ObjectMeta: metav1.ObjectMeta{Name: "test"}},
 				},
 				File: &joy.YAMLFile{Path: "test"},
 			},
@@ -69,7 +70,7 @@ func TestGenerator(t *testing.T) {
 			ExpectedRelease: &v1alpha1.Release{
 				ApiVersion:      "joy.nesto.ca/v1alpha1",
 				Kind:            "Release",
-				ReleaseMetadata: v1alpha1.ReleaseMetadata{Name: "app"},
+				ReleaseMetadata: v1alpha1.ReleaseMetadata{ObjectMeta: metav1.ObjectMeta{Name: "app"}},
 				Spec: v1alpha1.ReleaseSpec{
 					Project: "",
 					Version: "v1",
@@ -83,12 +84,12 @@ func TestGenerator(t *testing.T) {
 				Environment: &v1alpha1.Environment{
 					ApiVersion:          "joy.nesto.ca/v1alpha1",
 					Kind:                "Environment",
-					EnvironmentMetadata: v1alpha1.EnvironmentMetadata{Name: "test"},
+					EnvironmentMetadata: v1alpha1.EnvironmentMetadata{ObjectMeta: metav1.ObjectMeta{Name: "test"}},
 				},
 				Project: &v1alpha1.Project{
 					ApiVersion:      "joy.nesto.ca/v1alpha1",
 					Kind:            "Project",
-					ProjectMetadata: v1alpha1.ProjectMetadata{Name: "test"},
+					ProjectMetadata: v1alpha1.ProjectMetadata{ObjectMeta: metav1.ObjectMeta{Name: "test"}},
 				},
 				File: &joy.YAMLFile{Path: "test"},
 			},
@@ -99,7 +100,7 @@ func TestGenerator(t *testing.T) {
 			Release: &v1alpha1.Release{
 				ApiVersion:      "joy.nesto.ca/v1alpha1",
 				Kind:            "Release",
-				ReleaseMetadata: v1alpha1.ReleaseMetadata{Name: "app"},
+				ReleaseMetadata: v1alpha1.ReleaseMetadata{ObjectMeta: metav1.ObjectMeta{Name: "app"}},
 				Spec: v1alpha1.ReleaseSpec{
 					Version: "v1",
 					Chart:   v1alpha1.ReleaseChart{Version: "test-version"},
@@ -108,12 +109,12 @@ func TestGenerator(t *testing.T) {
 				Environment: &v1alpha1.Environment{
 					ApiVersion:          "joy.nesto.ca/v1alpha1",
 					Kind:                "Environment",
-					EnvironmentMetadata: v1alpha1.EnvironmentMetadata{Name: "test"},
+					EnvironmentMetadata: v1alpha1.EnvironmentMetadata{ObjectMeta: metav1.ObjectMeta{Name: "test"}},
 				},
 				Project: &v1alpha1.Project{
 					ApiVersion:      "joy.nesto.ca/v1alpha1",
 					Kind:            "Project",
-					ProjectMetadata: v1alpha1.ProjectMetadata{Name: "test"},
+					ProjectMetadata: v1alpha1.ProjectMetadata{ObjectMeta: metav1.ObjectMeta{Name: "test"}},
 				},
 				File: &joy.YAMLFile{Path: "test"},
 			},
@@ -131,7 +132,7 @@ func TestGenerator(t *testing.T) {
 			ExpectedRelease: &v1alpha1.Release{
 				ApiVersion:      "joy.nesto.ca/v1alpha1",
 				Kind:            "Release",
-				ReleaseMetadata: v1alpha1.ReleaseMetadata{Name: "app"},
+				ReleaseMetadata: v1alpha1.ReleaseMetadata{ObjectMeta: metav1.ObjectMeta{Name: "app"}},
 				Spec: v1alpha1.ReleaseSpec{
 					Project: "",
 					Version: "v1",
@@ -145,12 +146,12 @@ func TestGenerator(t *testing.T) {
 				Environment: &v1alpha1.Environment{
 					ApiVersion:          "joy.nesto.ca/v1alpha1",
 					Kind:                "Environment",
-					EnvironmentMetadata: v1alpha1.EnvironmentMetadata{Name: "test"},
+					EnvironmentMetadata: v1alpha1.EnvironmentMetadata{ObjectMeta: metav1.ObjectMeta{Name: "test"}},
 				},
 				Project: &v1alpha1.Project{
 					ApiVersion:      "joy.nesto.ca/v1alpha1",
 					Kind:            "Project",
-					ProjectMetadata: v1alpha1.ProjectMetadata{Name: "test"},
+					ProjectMetadata: v1alpha1.ProjectMetadata{ObjectMeta: metav1.ObjectMeta{Name: "test"}},
 				},
 				File: &joy.YAMLFile{Path: "test"},
 			},

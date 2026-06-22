@@ -9,6 +9,7 @@ import (
 	joy "github.com/nestoca/joy/pkg"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/nestoca/joy-generator/internal/github"
 )
@@ -78,8 +79,12 @@ func TestCleanupCache(t *testing.T) {
 			for _, file := range tt.cachedFiles {
 				envName := strings.Split(file, "/")[1]
 				cache.Set(&v1alpha1.Release{
-					Environment: &v1alpha1.Environment{EnvironmentMetadata: v1alpha1.EnvironmentMetadata{Name: envName}},
-					File:        &joy.YAMLFile{Path: filepath.Join(repo.Directory(), file)},
+					Environment: &v1alpha1.Environment{
+						EnvironmentMetadata: v1alpha1.EnvironmentMetadata{
+							ObjectMeta: metav1.ObjectMeta{Name: envName},
+						},
+					},
+					File: &joy.YAMLFile{Path: filepath.Join(repo.Directory(), file)},
 				},
 					"test")
 			}
