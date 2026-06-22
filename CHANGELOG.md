@@ -1,3 +1,12 @@
+# [0.33.0](https://github.com/nestoca/joy-generator/compare/v0.32.8...v0.33.0) (2026-06-22)
+
+
+### Features
+
+* **PL-6433:** update joy ([8103472](https://github.com/nestoca/joy-generator/commit/810347272fd6da439f66f3e1b46c43b797a15f32))
+
+
+
 ## [0.32.8](https://github.com/nestoca/joy-generator/compare/v0.32.7...v0.32.8) (2026-06-08)
 
 
