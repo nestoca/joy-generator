@@ -1,0 +1,23 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "github>nestoca/renovate-config",
+    "github>nestoca/renovate-config:internal-docker",
+    "github>nestoca/renovate-config:monthly-internal-gomod-bumps",
+    "github>nestoca/renovate-config:self-exclusion(joy-generator)"
+  ],
+  "packageRules": [
+    {
+      "description": "Enable github-actions updates",
+      "matchManagers": ["github-actions"],
+      "enabled": true
+    },
+    {
+      "description": "Track joy major/minor updates as they are released (override monthly schedule)",
+      "matchPackageNames": ["github.com/nestoca/joy"],
+      "matchUpdateTypes": ["major", "minor"],
+      "enabled": true,
+      "schedule": ["at any time"]
+    }
+  ]
+}
