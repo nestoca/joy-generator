@@ -194,8 +194,8 @@ github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd/go.mod h1:6dJ
 github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
 github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee h1:W5t00kpgFdJifH4BDsTlE89Zl93FEloxaWZfGcifgq8=
 github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
-github.com/nestoca/joy v0.90.1 h1:30V1JeF7fQw3pQ6NRlpvjIra3U0eRDCB/0Bs9nM4w8I=
-github.com/nestoca/joy v0.90.1/go.mod h1:daMJaOYyGCONHO5ORCh20gcxUYQ8pi8kuy4zIgcgaLc=
+github.com/nestoca/joy v0.92.0 h1:m5UrRUcY4I1KnJjvXZzy281l5g8hm8QNaTILwbH/Uq0=
+github.com/nestoca/joy v0.92.0/go.mod h1:daMJaOYyGCONHO5ORCh20gcxUYQ8pi8kuy4zIgcgaLc=
 github.com/nestoca/survey/v2 v2.0.0 h1:orM/TXtBSQJCPiZy9N51hcwH0WzFjQJ7TQKCfMTnGoQ=
 github.com/nestoca/survey/v2 v2.0.0/go.mod h1:QfmcQfCRtqsiBpePFhHEW0MY9QH7lSpw3CQinsdC/dc=
 github.com/onsi/gomega v1.34.1 h1:EUMJIKUjM8sKjYbtxQI9A4z2o+rruxnzNvpknOXie6k=
