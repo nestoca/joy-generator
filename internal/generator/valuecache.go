@@ -110,8 +110,11 @@ func (vc *valueCache) CleanupCache() error {
 	vc.logger.Info().Strs("changedFiles", changedFiles).Str("previousRef", vc.previousRef).Str("currentRef", currentRef).Msg("Change detected in git repository")
 
 	for _, file := range changedFiles {
-		if file == "joy.yaml" {
-			vc.logger.Info().Msg("joy.yaml changed, clearing all cache")
+		// joy.yaml and catalog.yaml both hold repo-wide config (catalog.yaml carries the
+		// chart refs/versions), so a change to either can affect every release's computed
+		// values and must invalidate the whole cache.
+		if file == "joy.yaml" || file == "catalog.yaml" {
+			vc.logger.Info().Str("file", file).Msg("repo-wide config changed, clearing all cache")
 			vc.environments = make(map[string]struct {
 				releases map[string]string
 			})
