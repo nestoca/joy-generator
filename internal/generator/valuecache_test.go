@@ -34,6 +34,12 @@ func TestCleanupCache(t *testing.T) {
 			expectedSize: 0,
 		},
 		{
+			name:         "catalog.yaml cache cleanup",
+			cachedFiles:  cachedFiles,
+			changedFiles: []string{"catalog.yaml"},
+			expectedSize: 0,
+		},
+		{
 			name:         "env cache cleanup",
 			cachedFiles:  cachedFiles,
 			changedFiles: []string{"environments/staging/env.yaml"},
