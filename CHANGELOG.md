@@ -1,3 +1,17 @@
+# [0.36.0](https://github.com/nestoca/joy-generator/compare/v0.35.0...v0.36.0) (2026-07-21)
+
+
+### Bug Fixes
+
+* **PL-6949:** invalidate value cache on catalog.yaml change ([7758e5c](https://github.com/nestoca/joy-generator/commit/7758e5ca95fe26ea60661d3e893966303c95b5e4))
+
+
+### Features
+
+* **PL-6895:** update joy and other deps ([dfc9556](https://github.com/nestoca/joy-generator/commit/dfc95565e615a6460642848d1acb4f4078ba5914))
+
+
+
 # [0.35.0](https://github.com/nestoca/joy-generator/compare/v0.34.0...v0.35.0) (2026-07-10)
 
 
