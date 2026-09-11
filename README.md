@@ -1,5 +1,10 @@
 # joy-generator
 
+> [!IMPORTANT]
+> **This repository is archived and no longer maintained.** `joy-generator`'s ApplicationSet-based
+> release generation has been replaced by [`joy-operator`](https://github.com/nestoca/joy-operator).
+> Please refer to that project going forward.
+
 ArgoCD plugin for expanding joy releases for the ArgoCD ApplicationSet Controller.
 
 ## Dev Setup
